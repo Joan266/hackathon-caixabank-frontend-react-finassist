@@ -11,7 +11,6 @@ export const useTransactionListModifiers = (
 
     const { dataCurrentPage, totalPages, dataLength } = useMemo(() => {
         if (!transactions) return { dataCurrentPage: [], totalPages: 0, dataLength: 0 };
-        // Sorting logic
         const sortedData = sortConfig?.property
             ? [...transactions].sort((a, b) => {
                 const valueA = a[sortConfig.property];
@@ -22,13 +21,12 @@ export const useTransactionListModifiers = (
                     return new Date(valueB) - new Date(valueA);
                 } else if (sortConfig.type === 'number') {
                     // Sort numbers in descending order
-                    return -(Number(valueA) - Number(valueB)); 
+                    return -(Number(valueA) - Number(valueB));
                 }
                 return 0;
             })
             : transactions;
 
-        // Filtering by type and category
         const filteredData = sortedData.filter(item =>
             (activeType ? item.type === activeType : true) &&
             (activeCategory ? item.category === activeCategory : true)
@@ -37,7 +35,6 @@ export const useTransactionListModifiers = (
         const dataLength = filteredData.length;
         const totalPages = Math.ceil(dataLength / rowsPerPage);
 
-        // Pagination logic
         const startIndex = page * rowsPerPage;
         const dataCurrentPage = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
@@ -57,39 +54,3 @@ export const useTransactionListModifiers = (
         page
     };
 };
-const handleDeleteClick = (event: { stopPropagation: () => void; }) => {
-    event.stopPropagation();
-    if(!bookingId)return;
-    Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'No, cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        dispatch(deleteOneThunk(bookingId))
-          .then(() => {
-            Swal.fire({
-              title: 'Deleted!',
-              text: 'Booking has been deleted successfully.',
-              icon: 'success',
-              timer: 2000,
-              showConfirmButton: false,
-            });
-            navigate("/bookings");
-          })
-          .catch(() => {
-            Swal.fire({
-              title: 'Error!',
-              text: 'Failed to delete room. Please try again.',
-              icon: 'error',
-              timer: 3000,
-              showConfirmButton: false,
-            });
-          });
-      }
-    });
-    setShowMenu(false);
-  };

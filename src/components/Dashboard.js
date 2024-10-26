@@ -1,6 +1,6 @@
 import React, { Profiler } from 'react';
 import { useStore } from '@nanostores/react';
-import { Box, Typography, Grid, Paper } from '@mui/material';
+import { Box, Typography, Grid2, Paper } from '@mui/material';
 import ExportButton from './ExportButton';
 import DownloadProfilerData from './DownloadProfilerData';
 import { onRenderCallback } from '../utils/onRenderCallback';
@@ -36,8 +36,8 @@ function Dashboard() {
                 */}
 
                 {/* Totals Section */}
-                <Grid container spacing={4} sx={{ mt: 4 }}>
-                    <Grid item xs={12} md={4}>
+                <Grid2 container spacing={4} sx={{ mt: 4 }}>
+                    <Grid2 item xs={12} md={4}>
                         <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
                             <Typography variant="h6" gutterBottom>
                                 Total Income
@@ -46,8 +46,8 @@ function Dashboard() {
                                 {/* Show total income */}
                             </Typography>
                         </Paper>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
+                    </Grid2>
+                    <Grid2 item xs={12} md={4}>
                         <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
                             <Typography variant="h6" gutterBottom>
                                 Total Expenses
@@ -56,8 +56,8 @@ function Dashboard() {
                                 {/* Show total expenses */}
                             </Typography>
                         </Paper>
-                    </Grid>
-                    <Grid item xs={12} md={4}>
+                    </Grid2>
+                    <Grid2 item xs={12} md={4}>
                         <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
                             <Typography variant="h6" gutterBottom>
                                 Balance
@@ -70,8 +70,8 @@ function Dashboard() {
                                 - Display a message or alert if the budget limit has been exceeded.
                             */}
                         </Paper>
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
 
                 {/* Statistics and Recommendations Section */}
                 {/* Instructions:
