@@ -50,7 +50,7 @@ function RegisterPage() {
         setSuccess(true);
         setError(null);
         setTimeout(() => {
-            navigate('/home/dashboard');
+            navigate('/');
         }, 2000);
     };
     useEffect(() => { console.log(user) }, [user])

@@ -4,13 +4,12 @@ import { transactionsStore } from '../stores/transactionStore';
 import {
     Box,
     Typography,
-    Grid,
+    Grid2,
     Paper,
     Select,
     MenuItem,
     FormControl,
     InputLabel,
-    Button,
 } from '@mui/material';
 import {
     LineChart,
@@ -23,7 +22,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from 'recharts';
-import ExportButton from './ExportButton'; // Import the refactored ExportButton
+import ExportButton from './ExportButton';
 
 function Analysis() {
     const transactions = useStore(transactionsStore);
@@ -31,13 +30,35 @@ function Analysis() {
     const [timeFrame, setTimeFrame] = useState('monthly');
     const [reportType, setReportType] = useState('trend');
 
-    // Prepare the data for the trend analysis report based on the selected time frame (daily, weekly, monthly, yearly).
-    // Each object in the array should have the structure: { key, income, expense }
-    const trendData = []; // Replace with logic to group transactions by the selected time frame.
+    const trendData = transactions.reduce((acc, transaction) => {
+        const date = new Date(transaction.date);
+        const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+        
+        if (!acc[monthYear]) {
+            acc[monthYear] = { key: monthYear, income: 0, expense: 0 };
+        }
+        
+        if (transaction.type === 'Income') {
+            acc[monthYear].income += transaction.amount;
+        } else {
+            acc[monthYear].expense += transaction.amount;
+        }
+        
+        return acc;
+    }, {});
 
-    // Prepare the data for the budget vs actual report.
-    // Each object in the array should have the structure: { key, budget, actual }
-    const budgetData = []; // Replace with logic to compare the actual expenses against the budget.
+    const trendDataArray = Object.values(trendData);
+
+    const budgetData = [
+        { key: 'Category 1', budget: 500, actual: 400 },
+        { key: 'Category 2', budget: 300, actual: 250 },
+        { key: 'Category 3', budget: 600, actual: 700 },
+    ];
+
+    const exportData = reportType === 'trend' ? trendDataArray : budgetData;
+    const exportHeaders = reportType === 'trend' 
+        ? ['Date', 'Income', 'Expense'] 
+        : ['Category', 'Budget', 'Actual'];
 
     return (
         <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
@@ -45,23 +66,21 @@ function Analysis() {
                 Advanced Analysis
             </Typography>
 
-            {/* Display No Transactions Message */}
             {transactions.length === 0 && (
                 <Typography variant="h6" color="text.secondary">
                     No transactions available.
                 </Typography>
             )}
 
-            {/* Controls */}
-            <Grid container spacing={2} alignItems="center" sx={{ mb: 4 }}>
-                <Grid item xs={12} sm={6} md={4}>
+            <Grid2 container spacing={2} alignItems="center" sx={{ mb: 4 }}>
+                <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
                     <FormControl fullWidth>
                         <InputLabel id="timeframe-select-label">Time Frame</InputLabel>
                         <Select
                             labelId="timeframe-select-label"
                             id="timeframe-select"
-                            label="Time Frame"
-                            // Implement logic to update the time frame state
+                            value={timeFrame}
+                            onChange={(e) => setTimeFrame(e.target.value)}
                         >
                             <MenuItem value="daily">Daily</MenuItem>
                             <MenuItem value="weekly">Weekly</MenuItem>
@@ -69,46 +88,41 @@ function Analysis() {
                             <MenuItem value="yearly">Yearly</MenuItem>
                         </Select>
                     </FormControl>
-                </Grid>
+                </Grid2>
 
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
                     <FormControl fullWidth>
                         <InputLabel id="report-type-select-label">Report Type</InputLabel>
                         <Select
                             labelId="report-type-select-label"
                             id="report-type-select"
-                            label="Report Type"
-                            // Implement logic to update the report type state
+                            value={reportType}
+                            onChange={(e) => setReportType(e.target.value)}
                         >
                             <MenuItem value="trend">Trend Analysis</MenuItem>
                             <MenuItem value="budget">Budget vs. Actual</MenuItem>
                         </Select>
                     </FormControl>
-                </Grid>
+                </Grid2>
 
-                {/* Export Button */}
-                {/* Instructions:
-                    - Implement the ExportButton component with the appropriate data and headers.
-                    - The data and headers should be based on the selected report type. */}
-                <Grid item xs={12} sm={6} md={4}>
+                <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
                     <ExportButton
-                        data={[]}
-                        filename={''}
-                        headers={['']}
+                        data={exportData}
+                        filename={`${reportType}_report.csv`}
+                        headers={exportHeaders}
                     />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
 
-            {/* Render the trend analysis chart if 'trend' is selected */}
             {reportType === 'trend' && (
-                <Grid container spacing={4}>
-                    <Grid item xs={12} md={12}>
+                <Grid2 container spacing={4}>
+                    <Grid2 size={{ xs: 12, md: 12 }}>
                         <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
                             <Typography variant="h6" gutterBottom color="text.secondary">
                                 Income and Expenses Trend
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
-                                <LineChart data={trendData}>
+                                <LineChart data={trendDataArray}>
                                     <XAxis dataKey="key" />
                                     <YAxis />
                                     <Tooltip />
@@ -118,37 +132,51 @@ function Analysis() {
                                 </LineChart>
                             </ResponsiveContainer>
                         </Paper>
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             )}
 
-            {/* Render the budget vs actual expenses chart if 'budget' is selected */}
-            {/* Implement the Budget vs. Actual Expenses report
-                Instructions:
-                - Display a bar chart comparing the budgeted amounts to the actual expenses.
-                - Use the budgetData array to render the chart.
-            */}
-            
-            {/* Additional Analysis Sections */}
-            <Grid container spacing={4} sx={{ mt: 4 }}>
-                <Grid item xs={12} md={6}>
+            {reportType === 'budget' && (
+                <Grid2 container spacing={4}>
+                    <Grid2 size={{ xs: 12, md: 12 }}>
+                        <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
+                            <Typography variant="h6" gutterBottom color="text.secondary">
+                                Budget vs. Actual Expenses
+                            </Typography>
+                            <ResponsiveContainer width="100%" height={400}>
+                                <BarChart data={budgetData}>
+                                    <XAxis dataKey="key" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="budget" fill="#4CAF50" name="Budget" />
+                                    <Bar dataKey="actual" fill="#FF9800" name="Actual" />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </Paper>
+                    </Grid2>
+                </Grid2>
+            )}
+
+            <Grid2 container spacing={4} sx={{ mt: 4 }}>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
                         <Typography variant="h6" gutterBottom color="text.secondary">
                             Savings Goals
                         </Typography>
                         <Typography>No savings goals set.</Typography>
                     </Paper>
-                </Grid>
+                </Grid2>
 
-                <Grid item xs={12} md={6}>
+                <Grid2 size={{ xs: 12, md: 6 }}>
                     <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
                         <Typography variant="h6" gutterBottom color="text.secondary">
                             Net Worth Over Time
                         </Typography>
                         <Typography>No net worth data available.</Typography>
                     </Paper>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </Box>
     );
 }
