@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "description": "Groceries at Supermarket",
+        "amount": 45.20,
+        "type": "Expense",
+        "category": "Food",
+        "date": "2024-10-01"
+    },
+    {
+        "id": 2,
+        "description": "Electricity Bill",
+        "amount": 75.50,
+        "type": "Expense",
+        "category": "Housing", 
+        "date": "2024-10-05"
+    },
+    {
+        "id": 3,
+        "description": "Salary for October",
+        "amount": 2500.00,
+        "type": "Income",
+        "category": "Salary",
+        "date": "2024-10-07"
+    },
+    {
+        "id": 4,
+        "description": "Dinner at Restaurant",
+        "amount": 60.00,
+        "type": "Expense",
+        "category": "Food",
+        "date": "2024-10-10"
+    },
+    {
+        "id": 5,
+        "description": "Gym Membership Fee",
+        "amount": 35.00,
+        "type": "Expense",
+        "category": "Health",
+        "date": "2024-10-15"
+    },
+    {
+        "id": 6,
+        "description": "Freelance Project Payment",
+        "amount": 500.00,
+        "type": "Income",
+        "category": "Freelance", 
+        "date": "2024-10-18"
+    },
+    {
+        "id": 7,
+        "description": "Gasoline for Car",
+        "amount": 40.75,
+        "type": "Expense",
+        "category": "Transportation", 
+        "date": "2024-10-20"
+    },
+    {
+        "id": 8,
+        "description": "Internet Bill",
+        "amount": 55.00,
+        "type": "Expense",
+        "category": "Housing",
+        "date": "2024-10-22"
+    },
+    {
+        "id": 9,
+        "description": "Movie Tickets",
+        "amount": 30.00,
+        "type": "Expense",
+        "category": "Entertainment",
+        "date": "2024-10-25"
+    },
+    {
+        "id": 10,
+        "description": "Selling Old Furniture",
+        "amount": 150.00,
+        "type": "Income",
+        "category": "Sales",
+        "date": "2024-10-26"
+    }
+]

@@ -1,6 +1,8 @@
 import { atom } from 'nanostores';
+import data from '../data/transactions.json';
 
-const initialTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
+const initialTransactions =  data;
+// const initialTransactions = JSON.parse(localStorage.getItem('transactions')) || data;
 
 export const transactionsStore = atom(initialTransactions);
 

@@ -1,6 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { transactionsStore } from '../stores/transactionStore';
+import { transactionsStore, addTransaction, deleteTransaction } from '../stores/transactionStore';
+import TransactionForm from './TransactionForm';
+import { allCategories } from '../constants/categories'; 
+
 import {
     Table,
     TableBody,
@@ -15,33 +18,55 @@ import {
     InputLabel,
     FormControl,
     Box,
-    Typography
+    Typography,
+    Alert
 } from '@mui/material';
+import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js'; 
 
 function TransactionList() {
     const transactions = useStore(transactionsStore);
-
+    
     const [filterCategory, setFilterCategory] = useState('');
     const [filterType, setFilterType] = useState('');
-    const [sortField, setSortField] = useState('');
+    const [sortConfig, setSortConfig] = useState({
+        type: 'number',
+        property: "",
+        direction: -1 // Sort direction from top to bottom
+    });
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [openForm, setOpenForm] = useState(false);
+    const [editingTransaction, setEditingTransaction] = useState(null);
+    
+    // Utilize the useTableModifiers to manage transactions
+    const { dataCurrentPage, totalPages, goToPage } = useTransactionListModifiers(
+        transactions,
+        rowsPerPage,
+        filterType,
+        filterCategory,
+        sortConfig,
+    );
 
     // Implement delete functionality
-    // Instructions:
-    // - Implement the logic to delete a transaction by its ID.
-    // - Make sure the transactions state/store is updated after deletion.
-    const deleteTransaction = useCallback((id) => {
-        // Implement functionality to delete a transaction
-    }, [transactions]);
+    const handleDelete = useCallback((id) => {
+        deleteTransaction(id); // Call the store action to delete the transaction
+    }, []);
 
     // Implement edit functionality
-    // Instructions:
-    // - Implement logic to edit a transaction.
-    // - Ensure the updated transaction is saved in the store.
     const handleEdit = useCallback((transaction) => {
-        // Implement functionality to edit a transaction
+        setEditingTransaction(transaction);
+        setOpenForm(true);
     }, []);
+
+    const handleAddTransaction = () => {
+        setEditingTransaction(null); // Clear editing state
+        setOpenForm(true); // Open the form to add a new transaction
+    };
+
+    const handleCloseForm = () => {
+        setOpenForm(false);
+        setEditingTransaction(null);
+    };
 
     return (
         <Box sx={{ mt: 4 }}>
@@ -50,18 +75,11 @@ function TransactionList() {
             </Typography>
 
             {/* Add transaction */}
-            {/* Instructions:
-                - Implement the logic to open a form for adding a new transaction.
-                - Trigger the form/modal through the onClick event. */}
-            <Button variant="contained" color="primary" onClick={() => {/* Implement functionality to add transaction */ }}>
+            <Button variant="contained" color="primary" onClick={handleAddTransaction}>
                 Add Transaction
             </Button>
 
             {/* Filters */}
-            {/* Instructions:
-                - Implement category and type filters using Material UI's `Select` component.
-                - Update the filterCategory and filterType state values when the user makes a selection.
-                - Apply the selected filters to the displayed transactions. */}
             <Box sx={{ display: 'flex', gap: 2, my: 2 }}>
                 <FormControl sx={{ minWidth: 120 }}>
                     <InputLabel id="filter-category-label">Category</InputLabel>
@@ -71,7 +89,9 @@ function TransactionList() {
                         onChange={(e) => setFilterCategory(e.target.value)}
                     >
                         <MenuItem value="">All</MenuItem>
-                        {/* Add additional categories dynamically */}
+                        {allCategories.map(category => (
+                            <MenuItem key={category} value={category}>{category}</MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
 
@@ -83,8 +103,8 @@ function TransactionList() {
                         onChange={(e) => setFilterType(e.target.value)}
                     >
                         <MenuItem value="">All</MenuItem>
-                        <MenuItem value="income">Income</MenuItem>
-                        <MenuItem value="expense">Expense</MenuItem>
+                        <MenuItem value="Income">Income</MenuItem>
+                        <MenuItem value="Expense">Expense</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -92,8 +112,8 @@ function TransactionList() {
                     <InputLabel id="sort-field-label">Sort By</InputLabel>
                     <Select
                         labelId="sort-field-label"
-                        value={sortField}
-                        onChange={(e) => setSortField(e.target.value)}
+                        value={sortConfig.property}
+                        onChange={(e) => setSortConfig({...sortConfig, property:e.target.value})}
                     >
                         <MenuItem value="">None</MenuItem>
                         <MenuItem value="amount">Amount</MenuItem>
@@ -103,10 +123,6 @@ function TransactionList() {
             </Box>
 
             {/* Table of transactions */}
-            {/* Instructions:
-                - Render the transactions in a table format using Material UI's `Table` component.
-                - For each transaction, display the following details: description, amount, type, category, and date.
-                - Implement the action buttons (Edit, Delete) within each row for managing transactions. */}
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -120,12 +136,40 @@ function TransactionList() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {/* Map over the transactions and render each transaction as a row.
-                            - For each row, add logic for Edit and Delete actions.
-                            - Display the transaction data in the respective table cells. */}
+                        {dataCurrentPage.map(transaction => (
+                            <TableRow key={transaction.id}>
+                                <TableCell>{transaction.description}</TableCell>
+                                <TableCell>{transaction.amount}</TableCell>
+                                <TableCell>{transaction.type}</TableCell>
+                                <TableCell>{transaction.category}</TableCell>
+                                <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="secondary" onClick={() => handleEdit(transaction)}>
+                                        Edit
+                                    </Button>
+                                    <Button variant="contained" color="error" onClick={() => handleDelete(transaction.id)}>
+                                        Delete
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            {/* Pagination controls */}
+            <Box sx={{ mt: 2 }}>
+                <Button disabled={page === 0} onClick={() => goToPage(page - 1)}>Previous</Button>
+                <Button disabled={page === totalPages - 1} onClick={() => goToPage(page + 1)}>Next</Button>
+            </Box>
+
+            {/* Transaction Form Modal */}
+            {openForm && (
+                <TransactionForm 
+                    transaction={editingTransaction}
+                    onClose={handleCloseForm}
+                />
+            )}
         </Box>
     );
 }
