@@ -21,6 +21,8 @@ import {
     TablePagination
 } from '@mui/material';
 import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
+import Swal from 'sweetalert2'; // Import SweetAlert
+
 function TransactionList() {
     const transactions = useStore(transactionsStore);
 
@@ -39,7 +41,7 @@ function TransactionList() {
         totalPages,
         goToPage,
         dataLength,
-        page 
+        page
     } = useTransactionListModifiers(
         transactions,
         rowsPerPage,
@@ -48,15 +50,32 @@ function TransactionList() {
         sortConfig
     );
 
-
     const handleDelete = useCallback((id) => {
-        deleteTransaction(id);
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteTransaction(id);
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: 'Transaction has been deleted successfully.',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+            }
+        });
     }, []);
 
-    const handleEdit = useCallback((transaction) => {
+    const handleEdit = (transaction) => {
         setEditingTransaction(transaction);
         setOpenForm(true);
-    }, []);
+    };
 
     const handleAddTransaction = () => {
         setEditingTransaction(null);
@@ -150,7 +169,12 @@ function TransactionList() {
                                 <TableCell>{transaction.category}</TableCell>
                                 <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
                                 <TableCell>
-                                    <Button variant="contained" color="secondary" onClick={() => handleEdit(transaction)}>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={() => handleEdit(transaction)}
+                                        sx={{ marginRight: '0.5em' }}
+                                    >
                                         Edit
                                     </Button>
                                     <Button variant="contained" color="error" onClick={() => handleDelete(transaction.id)}>
@@ -174,7 +198,7 @@ function TransactionList() {
 
             {openForm && (
                 <TransactionForm
-                    transaction={editingTransaction}
+                    transactionToEdit={editingTransaction}
                     onClose={handleCloseForm}
                 />
             )}

@@ -1,48 +1,121 @@
 import React, { useState, useEffect } from 'react';
-import { useStore } from '@nanostores/react';
-import { transactionsStore } from '../stores/transactionStore';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Box } from '@mui/material';
-function TransactionForm({ transactionToEdit, onClose }) {
-    const transactions = useStore(transactionsStore);
+import { addTransaction } from '../stores/transactionStore';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    TextField,
+    Button,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Box,
+    Grid2
+} from '@mui/material';
+import Swal from 'sweetalert2';
+import { expenseCategories, incomeCategories } from '../constants/categories';
+import { expenseCategoryKeywords, incomeCategoriesKeywords } from '../constants/categoryKeywords';
 
-    // Local state variables
-    // Instructions:
-    // - Ensure the form fields are correctly initialized when in "edit mode."
+function TransactionForm({ transactionToEdit, onClose }) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
-    const [type, setType] = useState('expense');
+    const [type, setType] = useState('Expense');
     const [category, setCategory] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
-    // Implement the function to assign a category based on description keywords
-    const assignCategory = (desc) => {
-        // Instructions: 
-        // - Loop through `categoryKeywords` to find matching keywords
-        // - If a keyword is found in the description, return the category
-        // - Return 'Other Expenses' if no category is found
+    useEffect(() => {
+        if (transactionToEdit) {
+            setDescription(transactionToEdit.description);
+            setAmount(transactionToEdit.amount);
+            setType(transactionToEdit.type);
+            setCategory(transactionToEdit.category);
+            setDate(new Date(transactionToEdit.date).toISOString().split('T')[0]);
+        } else {
+            setCategory('Other Expenses');
+        }
+    }, [transactionToEdit]);
 
-        return 'Other Expenses';
+    const getCategoriesForType = () => {
+        return type === 'Income' ? incomeCategories : expenseCategories;
     };
 
-    // Auto-assign a category if adding a new transaction
-    useEffect(() => {
-        if (!transactionToEdit) {
-            // Instructions: 
-            // - Call the `assignCategory` function to determine the category based on the description
-            // - Then, update the category state with the result
+    const findCategoryFromDescription = (desc, type) => {
+        const lowerCaseDesc = desc.toLowerCase();
+        
+        const categoryKeywords = type === "Expense" ? expenseCategoryKeywords : incomeCategoriesKeywords;
+    
+        for (const [cat, keywords] of Object.entries(categoryKeywords)) {
+            if (keywords.some(keyword => lowerCaseDesc.includes(keyword))) {
+                return cat;
+            }
+        }
+    
+        return type === "Expense" ? 'Other Expenses' : 'Other Income';
+    };
+    
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!description || !amount || !type || !category || !date) {
+            Swal.fire({
+                title: 'Error!',
+                text: "Please fill in all fields.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
         }
 
-        // Instructions: Add the proper dependencies to the useEffect hook
-    }, []);
+        if (!getCategoriesForType(type).includes(category)) {
+            Swal.fire({
+                title: 'Error!',
+                text: "Selected category does not match the transaction type.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Instructions:
-        // - Validate that all fields are filled in.
-        // - If editing, update the transaction in the store.
-        // - If adding a new transaction, create it and save it to the store.
-        // - The transaction type should be either "income" or "expense".
-        // - Ensure the transaction has the following structure: { id, description, amount, type, category, date }
+        const transaction = {
+            id: transactionToEdit ? transactionToEdit.id : Date.now(),
+            description,
+            amount: parseFloat(amount),
+            type,
+            category,
+            date,
+        };
+
+        try {
+            if (transactionToEdit) {
+                addTransaction(transaction);
+                Swal.fire({
+                    title: 'Success!',
+                    text: `Transaction updated successfully:\n\nDescription: ${transaction.description}\nAmount: €${transaction.amount.toFixed(2)}\nType: ${transaction.type}\nCategory: ${transaction.category}\nDate: ${new Date(transaction.date).toLocaleDateString()}`,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                addTransaction(transaction);
+                Swal.fire({
+                    title: 'Success!',
+                    text: `Transaction added successfully:\n\nDescription: ${transaction.description}\nAmount: €${transaction.amount.toFixed(2)}\nType: ${transaction.type}\nCategory: ${transaction.category}\nDate: ${new Date(transaction.date).toLocaleDateString()}`,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            }
+
+            onClose();
+
+        } catch (error) {
+            Swal.fire({
+                title: 'Error!',
+                text: "An error occurred while processing your request.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
     };
 
     return (
@@ -50,19 +123,25 @@ function TransactionForm({ transactionToEdit, onClose }) {
             <DialogTitle>{transactionToEdit ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
             <form onSubmit={handleSubmit}>
                 <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
+                    <Grid2 container spacing={2}>
+                        <Grid2 item xs={12}>
                             <TextField
                                 label="Description"
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => {
+                                    const desc = e.target.value;
+                                    setDescription(desc);
+                                    if (!transactionToEdit) {
+                                        setCategory(findCategoryFromDescription(desc,type));
+                                    }
+                                }}
                                 fullWidth
                                 margin="normal"
                                 required
                                 name="description"
                             />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
+                        </Grid2>
+                        <Grid2 item xs={12} sm={6}>
                             <TextField
                                 label="Amount (€)"
                                 type="number"
@@ -71,27 +150,30 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                 fullWidth
                                 margin="normal"
                                 required
-                                inputProps={{ min: 0, step: '0.01' }}
+                                slotProps={{ htmlInput: { min: 0, step: '0.01' } }}
                                 name="amount"
                             />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
+                        </Grid2>
+                        <Grid2 item xs={12} sm={6}>
                             <FormControl fullWidth margin="normal" required>
                                 <InputLabel id="type-label">Type</InputLabel>
                                 <Select
                                     labelId="type-label"
                                     value={type}
-                                    onChange={(e) => setType(e.target.value)}
+                                    onChange={(e) => {
+                                        const selectedType = e.target.value;
+                                        setType(selectedType);
+                                        setCategory(findCategoryFromDescription(description, selectedType));
+                                    }}
                                     label="Type"
                                     name="type"
-                                    inputProps={{ name: 'filterTypeForm' }}
                                 >
-                                    <MenuItem value="income">Income</MenuItem>
-                                    <MenuItem value="expense">Expense</MenuItem>
+                                    <MenuItem value="Income">Income</MenuItem>
+                                    <MenuItem value="Expense">Expense</MenuItem>
                                 </Select>
                             </FormControl>
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
+                        </Grid2>
+                        <Grid2 item xs={12} sm={6}>
                             <FormControl fullWidth margin="normal" required>
                                 <InputLabel id="category-label">Category</InputLabel>
                                 <Select
@@ -100,22 +182,34 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                     onChange={(e) => setCategory(e.target.value)}
                                     label="Category"
                                     name="category"
-                                    inputProps={{ name: 'filterCategoryForm' }}
                                 >
-                                    {/* Instructions: Use the `allCategories` imported file to render the categories as menu items */}
-                                    <MenuItem value="Other Expenses">Other Expenses</MenuItem>
+                                    {getCategoriesForType().map(cat => (
+                                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
-                        </Grid>
-                        {/* Fill in the remaining field for date type */}
-                    </Grid>
+                        </Grid2>
+                        <Grid2 item xs={12} sm={6}>
+                            <TextField
+                                label="Date"
+                                type="date"
+                                value={date}
+                                onChange={(e) => setDate(e.target.value)}
+                                fullWidth
+                                margin="normal"
+                                required
+                                slotProps={{ inputLabel: { shrink: true, } }}
+                                name="date"
+                            />
+                        </Grid2>
+                    </Grid2>
                 </DialogContent>
                 <DialogActions>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', p: 2 }}>
                         <Button onClick={onClose} color="secondary">
                             Cancel
                         </Button>
-                        <Button type="submit" variant="contained" color="primary" data-testid="add-transaction-button">
+                        <Button type="submit" variant="contained" color="primary">
                             {transactionToEdit ? 'Update' : 'Add'}
                         </Button>
                     </Box>

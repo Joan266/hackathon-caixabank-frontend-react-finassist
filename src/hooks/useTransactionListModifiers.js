@@ -57,3 +57,39 @@ export const useTransactionListModifiers = (
         page
     };
 };
+const handleDeleteClick = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    if(!bookingId)return;
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteOneThunk(bookingId))
+          .then(() => {
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'Booking has been deleted successfully.',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            navigate("/bookings");
+          })
+          .catch(() => {
+            Swal.fire({
+              title: 'Error!',
+              text: 'Failed to delete room. Please try again.',
+              icon: 'error',
+              timer: 3000,
+              showConfirmButton: false,
+            });
+          });
+      }
+    });
+    setShowMenu(false);
+  };
