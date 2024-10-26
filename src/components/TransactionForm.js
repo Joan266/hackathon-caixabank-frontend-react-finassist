@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Select, MenuItem, InputLabel, FormControl, Grid, Box } from '@mui/material';
-import { categoryKeywords } from '../constants/categoryKeywords';
-import { allCategories } from '../constants/categories';
-
 function TransactionForm({ transactionToEdit, onClose }) {
     const transactions = useStore(transactionsStore);
 

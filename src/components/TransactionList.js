@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
-import { transactionsStore, addTransaction, deleteTransaction } from '../stores/transactionStore';
+import { transactionsStore, deleteTransaction } from '../stores/transactionStore';
 import TransactionForm from './TransactionForm';
-import { allCategories } from '../constants/categories'; 
-
+import { allCategories } from '../constants/categories';
 import {
     Table,
     TableBody,
@@ -19,53 +18,63 @@ import {
     FormControl,
     Box,
     Typography,
-    Alert
+    TablePagination
 } from '@mui/material';
-import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js'; 
-
+import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
 function TransactionList() {
     const transactions = useStore(transactionsStore);
-    
+
     const [filterCategory, setFilterCategory] = useState('');
     const [filterType, setFilterType] = useState('');
     const [sortConfig, setSortConfig] = useState({
         type: 'number',
         property: "",
-        direction: -1 // Sort direction from top to bottom
     });
-    const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openForm, setOpenForm] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
-    
-    // Utilize the useTableModifiers to manage transactions
-    const { dataCurrentPage, totalPages, goToPage } = useTransactionListModifiers(
+
+    const {
+        dataCurrentPage,
+        totalPages,
+        goToPage,
+        dataLength,
+        page 
+    } = useTransactionListModifiers(
         transactions,
         rowsPerPage,
         filterType,
         filterCategory,
-        sortConfig,
+        sortConfig
     );
 
-    // Implement delete functionality
+
     const handleDelete = useCallback((id) => {
-        deleteTransaction(id); // Call the store action to delete the transaction
+        deleteTransaction(id);
     }, []);
 
-    // Implement edit functionality
     const handleEdit = useCallback((transaction) => {
         setEditingTransaction(transaction);
         setOpenForm(true);
     }, []);
 
     const handleAddTransaction = () => {
-        setEditingTransaction(null); // Clear editing state
-        setOpenForm(true); // Open the form to add a new transaction
+        setEditingTransaction(null);
+        setOpenForm(true);
     };
 
     const handleCloseForm = () => {
         setOpenForm(false);
         setEditingTransaction(null);
+    };
+
+    const handleChangePage = (event, newPage) => {
+        goToPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        goToPage(0);
     };
 
     return (
@@ -74,12 +83,10 @@ function TransactionList() {
                 Transaction List
             </Typography>
 
-            {/* Add transaction */}
             <Button variant="contained" color="primary" onClick={handleAddTransaction}>
                 Add Transaction
             </Button>
 
-            {/* Filters */}
             <Box sx={{ display: 'flex', gap: 2, my: 2 }}>
                 <FormControl sx={{ minWidth: 120 }}>
                     <InputLabel id="filter-category-label">Category</InputLabel>
@@ -113,7 +120,7 @@ function TransactionList() {
                     <Select
                         labelId="sort-field-label"
                         value={sortConfig.property}
-                        onChange={(e) => setSortConfig({...sortConfig, property:e.target.value})}
+                        onChange={(e) => setSortConfig({ ...sortConfig, property: e.target.value })}
                     >
                         <MenuItem value="">None</MenuItem>
                         <MenuItem value="amount">Amount</MenuItem>
@@ -122,7 +129,6 @@ function TransactionList() {
                 </FormControl>
             </Box>
 
-            {/* Table of transactions */}
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -157,15 +163,17 @@ function TransactionList() {
                 </Table>
             </TableContainer>
 
-            {/* Pagination controls */}
-            <Box sx={{ mt: 2 }}>
-                <Button disabled={page === 0} onClick={() => goToPage(page - 1)}>Previous</Button>
-                <Button disabled={page === totalPages - 1} onClick={() => goToPage(page + 1)}>Next</Button>
-            </Box>
+            <TablePagination
+                component="div"
+                count={dataLength}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
 
-            {/* Transaction Form Modal */}
             {openForm && (
-                <TransactionForm 
+                <TransactionForm
                     transaction={editingTransaction}
                     onClose={handleCloseForm}
                 />

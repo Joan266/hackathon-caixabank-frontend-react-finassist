@@ -12,7 +12,7 @@
         "description": "Electricity Bill",
         "amount": 75.50,
         "type": "Expense",
-        "category": "Housing", 
+        "category": "Housing",
         "date": "2024-10-05"
     },
     {
@@ -44,7 +44,7 @@
         "description": "Freelance Project Payment",
         "amount": 500.00,
         "type": "Income",
-        "category": "Freelance", 
+        "category": "Freelance",
         "date": "2024-10-18"
     },
     {
@@ -52,7 +52,7 @@
         "description": "Gasoline for Car",
         "amount": 40.75,
         "type": "Expense",
-        "category": "Transportation", 
+        "category": "Transportation",
         "date": "2024-10-20"
     },
     {
@@ -78,5 +78,85 @@
         "type": "Income",
         "category": "Sales",
         "date": "2024-10-26"
+    },
+    {
+        "id": 11,
+        "description": "New Books for Class",
+        "amount": 80.00,
+        "type": "Expense",
+        "category": "Education",
+        "date": "2024-10-27"
+    },
+    {
+        "id": 12,
+        "description": "Interest from Savings Account",
+        "amount": 20.00,
+        "type": "Income",
+        "category": "Interest and Dividends",
+        "date": "2024-10-28"
+    },
+    {
+        "id": 13,
+        "description": "Gift for Friend's Birthday",
+        "amount": 25.00,
+        "type": "Expense",
+        "category": "Gifts and Donations",
+        "date": "2024-10-29"
+    },
+    {
+        "id": 14,
+        "description": "Work Bonus",
+        "amount": 300.00,
+        "type": "Income",
+        "category": "Other Income",
+        "date": "2024-10-30"
+    },
+    {
+        "id": 15,
+        "description": "New Shoes",
+        "amount": 50.00,
+        "type": "Expense",
+        "category": "Clothing",
+        "date": "2024-11-01"
+    },
+    {
+        "id": 16,
+        "description": "Annual Health Check-up",
+        "amount": 120.00,
+        "type": "Expense",
+        "category": "Health",
+        "date": "2024-11-02"
+    },
+    {
+        "id": 17,
+        "description": "Weekend Trip to Nearby City",
+        "amount": 200.00,
+        "type": "Expense",
+        "category": "Travel",
+        "date": "2024-11-03"
+    },
+    {
+        "id": 18,
+        "description": "Family Dinner Celebration",
+        "amount": 75.00,
+        "type": "Expense",
+        "category": "Food",
+        "date": "2024-11-04"
+    },
+    {
+        "id": 19,
+        "description": "Donation to Local Charity",
+        "amount": 100.00,
+        "type": "Expense",
+        "category": "Gifts and Donations",
+        "date": "2024-11-05"
+    },
+    {
+        "id": 20,
+        "description": "Sale of Old Bicycle",
+        "amount": 120.00,
+        "type": "Income",
+        "category": "Sales",
+        "date": "2024-11-06"
     }
 ]
