@@ -4,31 +4,43 @@ import { useStore } from '@nanostores/react';
 import { userSettingsStore } from '../stores/userSettingsStore';
 import { transactionsStore } from '../stores/transactionStore';
 import { Alert } from '@mui/material';
-import { budgetAlertStore } from '../stores/budgetAlertStore'; // Importar el store de alertas
+import { budgetAlertStore, updateBudgetAlert, resetBudgetAlert } from '../stores/budgetAlertStore'; // Importar el store de alertas
 
 const BudgetAlert = () => {
-    const userSettings = useStore(userSettingsStore);
+    const { totalBudgetLimit } = useStore(userSettingsStore);
     const transactions = useStore(transactionsStore);
+    const { isVisible, message } = useStore(budgetAlertStore);
 
     // Instructions:
     // - Calculate the total expenses from the transactions.
-    const totalExpense = 0; // Replace with the total expenses calculation.
+    const totalExpense = transactions.reduce((acc, transaction) => acc + transaction.amount, 0);
 
     // Determine if the budget has been exceeded
-    const budgetExceeded = false; // Replace with a comparison of totalExpense and userSettings.totalBudgetLimit
+    const budgetExceeded = totalExpense > totalBudgetLimit; // Replace with a comparison of totalExpense and userSettings.totalBudgetLimit
 
     // Use the useEffect hook to update the budgetAlertStore when the budget is exceeded
     useEffect(() => {
         // Instructions:
         // - If the budget has been exceeded, set the `isVisible` property in the `budgetAlertStore` to true and provide a warning message.
         // - If the budget has not been exceeded, set `isVisible` to false and clear the message.
-    }, [budgetExceeded, userSettings.totalBudgetLimit]);
+        if (budgetExceeded) {
+            updateBudgetAlert("Budget exceeded");
+        } else {
+            resetBudgetAlert();
+        }
+    }, [budgetExceeded]);
 
     return (
         // Conditional rendering of the alert
         // Instructions:
         // - If the budget is exceeded, return an `Alert` component with the appropriate message and severity.
-        null // Replace with conditional rendering logic
+        <>
+            {isVisible && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                    {message}
+                </Alert>
+            )}
+        </>
     );
 };
 
