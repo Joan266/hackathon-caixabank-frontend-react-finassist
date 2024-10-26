@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
-import { CircularProgress, Typography, Box } from '@mui/material';
+import { CircularProgress, Typography, Paper } from '@mui/material';
 import dayjs from 'dayjs';
 
 function Recommendations() {
@@ -30,14 +30,14 @@ function Recommendations() {
     const currentYear = dayjs().year();
 
     const expenseThisMonth = expenses
-        .filter(transaction => 
-            dayjs(transaction.date).month() === currentMonth && 
+        .filter(transaction =>
+            dayjs(transaction.date).month() === currentMonth &&
             dayjs(transaction.date).year() === currentYear)
         .reduce((total, transaction) => total + transaction.amount, 0);
 
     const expenseLastMonth = expenses
-        .filter(transaction => 
-            dayjs(transaction.date).month() === lastMonth && 
+        .filter(transaction =>
+            dayjs(transaction.date).month() === lastMonth &&
             dayjs(transaction.date).year() === currentYear)
         .reduce((total, transaction) => total + transaction.amount, 0);
 
@@ -56,10 +56,10 @@ function Recommendations() {
     }
 
     return (
-        <Box sx={{ mt: 4 }}>
+        <Paper sx={{ padding: 2, mt: 2 }}>
             <Typography variant="h5">Recommendations</Typography>
             <Typography>{message}</Typography>
-        </Box>
+        </Paper>
     );
 }
 

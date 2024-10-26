@@ -8,8 +8,11 @@ import {
     TableRow,
     Paper,
 } from '@mui/material';
+import { transactionsStore } from '../stores/transactionStore';
+import { useStore } from '@nanostores/react';
 
-function RecentTransactions({ transactions }) {
+function RecentTransactions() {
+    const transactions = useStore(transactionsStore);
     const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     const recentTransactions = sortedTransactions.slice(0, 5);

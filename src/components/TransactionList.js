@@ -21,7 +21,7 @@ import {
     TablePagination
 } from '@mui/material';
 import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
-import Swal from 'sweetalert2'; // Import SweetAlert
+import Swal from 'sweetalert2'; 
 
 function TransactionList() {
     const transactions = useStore(transactionsStore);
