@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../stores/authStore';
+import { login, authStore } from '../stores/authStore';
+import { useStore } from '@nanostores/react';
 import {
     Box,
     Button,
     TextField,
     Typography,
     Alert,
-    Grid
+    Stack
 } from '@mui/material';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
     const [showCredentials, setShowCredentials] = useState(false);
     const navigate = useNavigate();
-
+    const { user } = useStore(authStore);
     const defaultCredentials = {
         email: 'default@example.com',
         password: 'password123'
@@ -30,6 +32,7 @@ function LoginPage() {
         // - Check if the email and password fields are filled.
         if (!email || !password) {
             // - If either is empty, set an appropriate error message.
+            setError("Missing credentials.")
             return;
         }
 
@@ -38,6 +41,16 @@ function LoginPage() {
         // - Check if the entered credentials match the default credentials or the stored user credentials.
         // - If valid, call the `login` function and navigate to the homepage.
         // - If invalid, set an error message.
+        if (!(email === defaultCredentials.email && password === defaultCredentials.password) && !(email === user?.email && password === user?.password)) {
+            setError("Not matching credentials.")
+            return;
+        }
+        login({email,password});
+        setSuccess(true);
+        setError(null);
+        setTimeout(() => {
+            navigate('/home/dashboard');
+        }, 2000);
     };
 
     const handleShowDefaultCredentials = () => {
@@ -49,15 +62,25 @@ function LoginPage() {
 
     return (
         <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8, p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
-            <Typography variant="h4" gutterBottom>
-                Login
-            </Typography>
+
+            <Stack direction="row" spacing={2} alignItems="center">
+                <Typography variant="h4" gutterBottom>
+                    Login
+                </Typography>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setShowCredentials(handleShowDefaultCredentials)}
+                >Show Credentials
+                </Button>
+            </Stack>
             <form onSubmit={handleLogin}>
                 <TextField
                     label="Email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
                     fullWidth
                     margin="normal"
                 />
@@ -66,6 +89,7 @@ function LoginPage() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
                     fullWidth
                     margin="normal"
                 />
@@ -84,6 +108,16 @@ function LoginPage() {
             {/* - Use the Alert component to display the error message if one exists. */}
             {/* - Ensure that registration and forgot password options are displayed below the error message if present. */}
 
+            {error && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                    {error}
+                </Alert>
+            )}
+            {success && (
+                <Alert severity="success" sx={{ mt: 2 }}>
+                    Account created successfully! Redirecting to login...
+                </Alert>
+            )}
             {showCredentials && (
                 <Alert severity="info" sx={{ mt: 2 }}>
                     <strong>Email:</strong> {defaultCredentials.email}<br />
