@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { Download as DownloadIcon } from '@mui/icons-material';
 import PropTypes from 'prop-types';
 
-const ExportButton = React.memo(function ExportButton({ data, filename, headers, label }) {
+const ExportButton = React.memo(function ExportButton({ data, filename = 'data.csv', headers, label = 'Export CSV' }) {
     const handleExport = useCallback(() => {
         const csv = convertArrayOfObjectsToCSV(data, headers);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -34,7 +34,7 @@ const ExportButton = React.memo(function ExportButton({ data, filename, headers,
             onClick={handleExport}
             disabled={!data || data.length === 0}
         >
-            {label || 'Export CSV'}
+            {label}
         </Button>
     );
 });
@@ -46,9 +46,5 @@ ExportButton.propTypes = {
     label: PropTypes.string,
 };
 
-ExportButton.defaultProps = {
-    filename: 'data.csv',
-    label: 'Export CSV',
-};
 
 export default ExportButton;

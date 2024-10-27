@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { userSettingsStore } from '../stores/userSettingsStore';
-import { budgetAlertStore, updateBudgetAlert } from '../stores/budgetAlertStore'; // Importar el store de alertas
+import { budgetAlertStore, updateBudgetAlert } from '../stores/budgetAlertStore';
 import {
     Box,
     Typography,
@@ -9,33 +9,69 @@ import {
     FormControlLabel,
     TextField,
     Button,
-    Grid,
+    Grid2,
     Paper,
     Alert,
 } from '@mui/material';
 import { expenseCategories } from '../constants/categories';
 import { transactionsStore } from '../stores/transactionStore';
+import Swal from 'sweetalert2';
 
 function Settings() {
-    const userSettings = useStore(userSettingsStore);
+    const {
+        totalBudgetLimit: storedBudgetLimit,
+        categoryLimits,
+        alertsEnabled: storedAlertsEnabled,
+        budgetExceeded: storedBudgetExceeded,
+    } = useStore(userSettingsStore);
+    const store = useStore(userSettingsStore);
     const transactions = useStore(transactionsStore);
 
-    const [budgetExceeded, setBudgetExceeded] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [error, setError] = useState('');
-    const [totalBudgetLimit, setTotalBudgetLimit] = useState(userSettings.totalBudgetLimit);
+    const [alertsEnabled, setAlertsEnabled] = useState(storedAlertsEnabled);
+    const [totalBudgetLimit, setTotalBudgetLimit] = useState(storedBudgetLimit);
+    const [categoryBudgetLimits, setCategoryBudgetLimits] = useState(categoryLimits);
 
+    useEffect(() => { console.log(store) }, [store]);
+    const totalExpense = useMemo(() => {
+        return transactions
+            .filter(transaction => transaction.type === 'Expense')
+            .reduce((total, transaction) => total + transaction.amount, 0);
+    }, [transactions]);
 
-    const handleSave = () => {
-        // Instructions:
-        // - Validate the total category limits.
-        // - If the total category limits exceed the total budget limit, set an error message.
-        // - If validation passes, clear the error message and save the updated settings to the store.
-        // - After saving, display a success message indicating that the settings were saved successfully.
+    const budgetExceeded = useMemo(() => {
+        return totalExpense > totalBudgetLimit;
+    }, [totalExpense, totalBudgetLimit]);
 
-        // Instructions:
-        // - Check if the total expense exceeds the total budget limit.
-        // - If exceeded, set the budgetExceeded state to true and update the budget alert.
+    const handleSave = async (e) => {
+        e.preventDefault();
+
+        const totalCategoryLimit = categoryBudgetLimits.reduce((total, limit) => total + Number(limit), 0);
+        if (totalCategoryLimit > totalBudgetLimit) {
+            Swal.fire({
+                title: 'Error!',
+                text: "Total category limits exceed the total budget limit.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        try {
+            updateBudgetAlert({ totalBudgetLimit, categoryLimits: categoryBudgetLimits, alertsEnabled });
+            Swal.fire({
+                title: 'Success!',
+                text: 'Settings saved successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        } catch (error) {
+            Swal.fire({
+                title: 'Error!',
+                text: "An error occurred while processing your request.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
     };
 
     return (
@@ -45,7 +81,7 @@ function Settings() {
                 gutterBottom
                 sx={{
                     fontWeight: 'bold',
-                    color: 'primary.main', 
+                    color: 'primary.main',
                     textAlign: 'left',
                 }}
             >
@@ -53,40 +89,49 @@ function Settings() {
             </Typography>
 
             <FormControlLabel
-                control={<Switch color="primary" />}
+                control={
+                    <Switch
+                        color="primary"
+                        checked={alertsEnabled}
+                        onChange={(e) => setAlertsEnabled(e.target.checked)}
+                    />
+                }
                 label="Enable Alerts"
-            // Instructions: Add `checked` and `onChange` to control the `alertsEnabled` state
             />
 
             <Paper sx={{ padding: 2, mt: 2, boxShadow: 3, borderRadius: 2 }}>
                 <Typography variant="h6" color="text.secondary">Total Budget Limit (€)</Typography>
                 <TextField
                     type="number"
-                    name="totalBudgetLimit"
+                    value={totalBudgetLimit}
+                    onChange={(e) => setTotalBudgetLimit(e.target.value)}
                     fullWidth
                     margin="normal"
-                    inputProps={{ min: 0, step: '0.01' }}
+                    slotProps={{ htmlInput: { min: 0, step: '0.01' } }}
                     sx={{ mt: 1 }}
-                // Instructions: Bind the value and `onChange` to control the `totalBudgetLimit` state
                 />
             </Paper>
 
             <Paper sx={{ padding: 2, mt: 2, boxShadow: 3, borderRadius: 2 }}>
                 <Typography variant="h6" color="text.secondary">Category Budget Limits (€)</Typography>
-                <Grid container spacing={2} sx={{ mt: 1 }}>
-                    {expenseCategories.map((category) => (
-                        <Grid item xs={12} sm={6} md={4} key={category}>
+                <Grid2 container spacing={2} sx={{ mt: 1 }}>
+                    {Object.entries(categoryBudgetLimits).map(([category, limit]) => (
+                        <Grid2 key={category} size={{ xs: 12, sm: 6, md: 4 }}>
                             <TextField
                                 label={category}
                                 type="number"
+                                value={limit}
+                                onChange={(e) => {
+                                    const newLimits = { ...categoryBudgetLimits, [category]: Number(e.target.value) }; 
+                                    setCategoryBudgetLimits(newLimits);
+                                }}
                                 fullWidth
                                 margin="normal"
-                                inputProps={{ min: 0, step: '0.01' }}
-                            // Instructions: Bind value and `onChange` for each category's budget limit state
+                                slotProps={{ htmlInput: { min: 0, step: '0.01' } }}
                             />
-                        </Grid>
+                        </Grid2>
                     ))}
-                </Grid>
+                </Grid2>
             </Paper>
 
             <Box sx={{ mt: 4 }}>
@@ -95,7 +140,7 @@ function Settings() {
                     color="primary"
                     fullWidth
                     sx={{ boxShadow: 2 }}
-                // Instructions: Add `onClick` handler to save the settings by calling `handleSave`
+                    onClick={handleSave}
                 >
                     Save Settings
                 </Button>
@@ -104,18 +149,6 @@ function Settings() {
             {budgetExceeded && (
                 <Alert severity="warning" sx={{ mt: 2 }}>
                     You have exceeded your budget limit of {totalBudgetLimit} €!
-                </Alert>
-            )}
-
-            {successMessage && (
-                <Alert severity="success" sx={{ mt: 2 }}>
-                    {successMessage}
-                </Alert>
-            )}
-
-            {error && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                    {error}
                 </Alert>
             )}
         </Box>

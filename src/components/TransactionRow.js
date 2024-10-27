@@ -4,22 +4,25 @@ import { TableRow, TableCell, Button } from '@mui/material';
 function TransactionRow({ transaction, onEdit, onDelete }) {
     return (
         <TableRow key={transaction.id}>
-            <TableCell>{transaction.description}</TableCell>
-            <TableCell>{transaction.amount.toFixed(2)}</TableCell>
-            <TableCell>{transaction.type === 'income' ? 'Income' : 'Expense'}</TableCell>
-            <TableCell>{transaction.category}</TableCell>
-            <TableCell>{new Date(transaction.date).toLocaleDateString('en-US')}</TableCell>
-            <TableCell>
-                {/* Add functionality for the edit button */}
-                <Button>
-                    Edit
-                </Button>
-                {/* Add functionality for the delete button */}
-                <Button>
-                    Delete
-                </Button>
-            </TableCell>
-        </TableRow>
+        <TableCell>{transaction.description}</TableCell>
+        <TableCell>{transaction.amount}</TableCell>
+        <TableCell>{transaction.type}</TableCell>
+        <TableCell>{transaction.category}</TableCell>
+        <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+        <TableCell>
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => onEdit(transaction)}
+                sx={{ marginRight: '0.5em' }}
+            >
+                Edit
+            </Button>
+            <Button variant="contained" color="error" onClick={() => onDelete(transaction.id)}>
+                Delete
+            </Button>
+        </TableCell>
+    </TableRow>
     );
 }
 

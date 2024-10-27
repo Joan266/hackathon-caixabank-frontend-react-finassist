@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore, deleteTransaction } from '../stores/transactionStore';
 import TransactionForm from './TransactionForm';
+import TransactionRow from './TransactionRow.js';
 import { allCategories } from '../constants/categories';
 import {
     Table,
@@ -38,7 +39,6 @@ function TransactionList() {
 
     const {
         dataCurrentPage,
-        totalPages,
         goToPage,
         dataLength,
         page
@@ -103,7 +103,7 @@ function TransactionList() {
                 gutterBottom
                 sx={{
                     fontWeight: 'bold',
-                    color: 'primary.main', 
+                    color: 'primary.main',
                     textAlign: 'left',
                 }}
             >
@@ -170,26 +170,12 @@ function TransactionList() {
                     </TableHead>
                     <TableBody>
                         {dataCurrentPage.map(transaction => (
-                            <TableRow key={transaction.id}>
-                                <TableCell>{transaction.description}</TableCell>
-                                <TableCell>{transaction.amount}</TableCell>
-                                <TableCell>{transaction.type}</TableCell>
-                                <TableCell>{transaction.category}</TableCell>
-                                <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
-                                <TableCell>
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        onClick={() => handleEdit(transaction)}
-                                        sx={{ marginRight: '0.5em' }}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button variant="contained" color="error" onClick={() => handleDelete(transaction.id)}>
-                                        Delete
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
+                            <TransactionRow
+                                key={transaction.id} 
+                                transaction={transaction} 
+                                onEdit={handleEdit} 
+                                onDelete={handleDelete} 
+                            />
                         ))}
                     </TableBody>
                 </Table>

@@ -11,10 +11,12 @@ const Footer = () => {
         <Box 
             component="footer" 
             sx={{
+                position: 'relative', 
                 backgroundImage: `url(${footerBackground})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
+                color:'white',
                 py: 3,
                 mt: 4,
                 textAlign: 'center',
@@ -24,7 +26,18 @@ const Footer = () => {
                 gap: 2,
             }}
         >
-            <Box sx={{ width: '100%', maxWidth: 400, mb: 2 }}>
+            <Box 
+                sx={{
+                    position: 'absolute', 
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)', 
+                    zIndex: 1, 
+                }} 
+            />
+            <Box sx={{ width: '100%', maxWidth: 400, mb: 2, zIndex: 2 }}>
                 <Paper 
                     component="form" 
                     sx={{
@@ -45,6 +58,7 @@ const Footer = () => {
                     <Button 
                         type="submit" 
                         variant="contained" 
+                        color="secondary"
                         sx={{ borderRadius: 20 }}
                     >
                         Search
@@ -52,11 +66,11 @@ const Footer = () => {
                 </Paper>
             </Box>
 
-            <Typography variant="body2">
+            <Typography variant="body2" sx={{ zIndex: 2 }}>
                 © {new Date().getFullYear()} Personal Finance Assistant
             </Typography>
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, zIndex: 2 }}>
                 <IconButton
                     aria-label="LinkedIn"
                     color="inherit"
@@ -72,7 +86,7 @@ const Footer = () => {
                     aria-label="GitHub"
                     color="inherit"
                     component="a"
-                    href="https://github.com/joanalemany"
+                    href="https://www.linkedin.com/in/joan-alemany-chulilla/" 
                     target="_blank"
                     rel="noopener noreferrer"
                 >

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
-import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { allCategories } from '../constants/categories';
 
 function AnalysisGraph() {
