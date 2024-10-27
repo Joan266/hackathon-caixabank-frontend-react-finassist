@@ -40,14 +40,22 @@ function Settings() {
 
     return (
         <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
-            <Typography variant="h4" gutterBottom color="primary">
+            <Typography
+                variant="h4"
+                gutterBottom
+                sx={{
+                    fontWeight: 'bold',
+                    color: 'primary.main', 
+                    textAlign: 'left',
+                }}
+            >
                 Settings
             </Typography>
 
             <FormControlLabel
                 control={<Switch color="primary" />}
                 label="Enable Alerts"
-                // Instructions: Add `checked` and `onChange` to control the `alertsEnabled` state
+            // Instructions: Add `checked` and `onChange` to control the `alertsEnabled` state
             />
 
             <Paper sx={{ padding: 2, mt: 2, boxShadow: 3, borderRadius: 2 }}>
@@ -59,7 +67,7 @@ function Settings() {
                     margin="normal"
                     inputProps={{ min: 0, step: '0.01' }}
                     sx={{ mt: 1 }}
-                    // Instructions: Bind the value and `onChange` to control the `totalBudgetLimit` state
+                // Instructions: Bind the value and `onChange` to control the `totalBudgetLimit` state
                 />
             </Paper>
 
@@ -74,7 +82,7 @@ function Settings() {
                                 fullWidth
                                 margin="normal"
                                 inputProps={{ min: 0, step: '0.01' }}
-                                // Instructions: Bind value and `onChange` for each category's budget limit state
+                            // Instructions: Bind value and `onChange` for each category's budget limit state
                             />
                         </Grid>
                     ))}
@@ -87,7 +95,7 @@ function Settings() {
                     color="primary"
                     fullWidth
                     sx={{ boxShadow: 2 }}
-                    // Instructions: Add `onClick` handler to save the settings by calling `handleSave`
+                // Instructions: Add `onClick` handler to save the settings by calling `handleSave`
                 >
                     Save Settings
                 </Button>

@@ -18,7 +18,7 @@
     {
         "id": 3,
         "description": "Salary for October",
-        "amount": 2500.00,
+        "amount": 250.00,
         "type": "Income",
         "category": "Salary",
         "date": "2024-10-07"

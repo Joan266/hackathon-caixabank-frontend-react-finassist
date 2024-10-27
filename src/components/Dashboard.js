@@ -27,10 +27,17 @@ function Dashboard() {
     return (
         <Profiler id="Dashboard" onRender={onRenderCallback}>
             <Box sx={{ p: 4 }}>
-                <Typography variant="h3" gutterBottom>
-                    Dashboard
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: 'primary.main', 
+                        textAlign: 'left',
+                    }}
+                >
+                    Financial Summary
                 </Typography>
-
                 <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between' }}>
                     <ExportButton data={transactions} filename="transactions.csv" headers={['id', 'description', 'amount', 'type', 'category', 'date']} label="Export Transactions" />
                     <DownloadProfilerData />

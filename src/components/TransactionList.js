@@ -21,7 +21,7 @@ import {
     TablePagination
 } from '@mui/material';
 import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
-import Swal from 'sweetalert2'; 
+import Swal from 'sweetalert2';
 
 function TransactionList() {
     const transactions = useStore(transactionsStore);
@@ -98,7 +98,15 @@ function TransactionList() {
 
     return (
         <Box sx={{ mt: 4 }}>
-            <Typography variant="h4" gutterBottom>
+            <Typography
+                variant="h4"
+                gutterBottom
+                sx={{
+                    fontWeight: 'bold',
+                    color: 'primary.main', 
+                    textAlign: 'left',
+                }}
+            >
                 Transaction List
             </Typography>
 

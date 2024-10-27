@@ -15,24 +15,24 @@ function SupportPage() {
     // - If there is an error, it saves the error message in `error` state and changes `loading` to false.
 
     useEffect(() => {
-        const fetchData = async () => { 
+        const fetchData = async () => {
             try {
-                const response = await fetch('https://jsonplaceholder.typicode.com/users'); 
+                const response = await fetch('https://jsonplaceholder.typicode.com/users');
                 if (!response.ok) {
                     const errorResponse = await response.json();
                     const errorMessage = errorResponse?.message || `HTTP error! status: ${response.status}`;
                     setError(errorMessage);
                 } else {
-                    const data = await response.json(); 
-                    setUsers(data); 
+                    const data = await response.json();
+                    setUsers(data);
                 }
             } catch (err) {
-                setError(err.message); 
+                setError(err.message);
             } finally {
-                setLoading(false); 
+                setLoading(false);
             }
         };
-        fetchData(); 
+        fetchData();
     }, []);
 
     // Filter users by search term
@@ -44,7 +44,7 @@ function SupportPage() {
     }, [users, searchTerm]);
 
     const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value); 
+        setSearchTerm(event.target.value);
     };
 
     if (loading) {
@@ -56,7 +56,7 @@ function SupportPage() {
     }
 
     if (error) {
-        return ( 
+        return (
             <Alert severity="error" sx={{ mt: 2 }}>
                 {error}
             </Alert>
@@ -66,10 +66,17 @@ function SupportPage() {
     return (
         <Profiler id="SupportPage" onRender={onRenderCallback}>
             <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
-                <Typography variant="h4" gutterBottom color="primary">
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{
+                        fontWeight: 'bold',
+                        color: 'primary.main', 
+                        textAlign: 'left',
+                    }}
+                >
                     Support Contacts
                 </Typography>
-
                 {/* Implement the search bar */}
                 {/* Instructions:
                     - Uses the `TextField` component of Material UI.

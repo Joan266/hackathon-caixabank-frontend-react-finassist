@@ -24,8 +24,8 @@ function AnalysisGraph() {
         const amount = categoryTransactions.reduce((total, transaction) => total + transaction.amount, 0);
         return { label: category, value: amount };
     });
-    const COLORS1 = ['#3D5B99', '#64B5F6']; 
-    const COLORS2 = ['#5F7B8A', '#A5D6A7', '#6A1B9A', '#9C27B0', '#4CAF50', '#00796B', '#26C6DA']; 
+    const COLORS1 = ['#2e96ff', '#02b2af']; 
+    const COLORS2 = ['#03008d', '#2731c8', '#60009b', '#b800d8', '#2e96ff', '#02b2af']; 
 
     return (
         <ResponsiveContainer width="100%" height={400}>

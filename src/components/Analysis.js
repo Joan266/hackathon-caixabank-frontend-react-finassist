@@ -33,17 +33,17 @@ function Analysis() {
     const trendData = transactions.reduce((acc, transaction) => {
         const date = new Date(transaction.date);
         const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
-        
+
         if (!acc[monthYear]) {
             acc[monthYear] = { key: monthYear, income: 0, expense: 0 };
         }
-        
+
         if (transaction.type === 'Income') {
             acc[monthYear].income += transaction.amount;
         } else {
             acc[monthYear].expense += transaction.amount;
         }
-        
+
         return acc;
     }, {});
 
@@ -56,14 +56,22 @@ function Analysis() {
     ];
 
     const exportData = reportType === 'trend' ? trendDataArray : budgetData;
-    const exportHeaders = reportType === 'trend' 
-        ? ['Date', 'Income', 'Expense'] 
+    const exportHeaders = reportType === 'trend'
+        ? ['Date', 'Income', 'Expense']
         : ['Category', 'Budget', 'Actual'];
 
     return (
         <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
-            <Typography variant="h4" gutterBottom color="primary">
-                Advanced Analysis
+            <Typography
+                variant="h4"
+                gutterBottom
+                sx={{
+                    fontWeight: 'bold',
+                    color: 'primary.main', 
+                    textAlign: 'left',
+                }}
+            >
+                Advance Analysis
             </Typography>
 
             {transactions.length === 0 && (

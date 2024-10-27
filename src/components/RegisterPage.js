@@ -42,7 +42,7 @@ function RegisterPage() {
         }
         // Save the new user's data to localStorage.
         // - If validation passes, store the new user's email and password in localStorage.
-        login({ email, password });
+        login({ email, password,image: 'https://avatars.githubusercontent.com/u/19550456' });
         // Automatically log the user in after successful registration.
         // - Call the `login` function to set the authenticated user in the store.
         // Redirect the user to the dashboard.
@@ -50,7 +50,7 @@ function RegisterPage() {
         setSuccess(true);
         setError(null);
         setTimeout(() => {
-            navigate('/');
+            navigate('/dashboard');
         }, 2000);
     };
     useEffect(() => { console.log(user) }, [user])

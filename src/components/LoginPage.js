@@ -45,11 +45,12 @@ function LoginPage() {
             setError("Not matching credentials.")
             return;
         }
-        login({email,password});
+        login({email,password, 
+            image: 'https://avatars.githubusercontent.com/u/19550456'});
         setSuccess(true);
         setError(null);
         setTimeout(() => {
-            navigate('/');
+            navigate('/dashboard');
         }, 2000);
     };
 
