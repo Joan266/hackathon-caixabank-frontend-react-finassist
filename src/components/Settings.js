@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { userSettingsStore, updateUserSettingsStore } from '../stores/userSettingsStore';
-import { budgetAlertStore, updateBudgetAlert } from '../stores/budgetAlertStore';
+import { updateBudgetAlert } from '../stores/budgetAlertStore';
 import {
     Box,
     Typography,
@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { transactionsStore } from '../stores/transactionStore';
 import Swal from 'sweetalert2';
+import calculateTransactionsTotalData  from '../utils/calculateTransactionsTotalData';
 
 function Settings() {
     const {
@@ -22,23 +23,14 @@ function Settings() {
         categoryLimits,
         alertsEnabled: storedAlertsEnabled,
     } = useStore(userSettingsStore);
-    const store = useStore(userSettingsStore);
     const transactions = useStore(transactionsStore);
+    const { totalExpense } = calculateTransactionsTotalData(transactions);
 
     const [alertsEnabled, setAlertsEnabled] = useState(storedAlertsEnabled);
     const [totalBudgetLimit, setTotalBudgetLimit] = useState(storedBudgetLimit);
     const [categoryBudgetLimits, setCategoryBudgetLimits] = useState(categoryLimits);
 
-    useEffect(() => { console.log(store) }, [store]);
-    const totalExpense = useMemo(() => {
-        return transactions
-            .filter(transaction => transaction.type === 'Expense')
-            .reduce((total, transaction) => total + transaction.amount, 0);
-    }, [transactions]);
-
-    const budgetExceeded = useMemo(() => {
-        return totalExpense > totalBudgetLimit;
-    }, [totalExpense, totalBudgetLimit]);
+    const budgetExceeded = totalExpense > totalBudgetLimit;
 
     const handleSave = async (e) => {
         e.preventDefault();
@@ -55,6 +47,7 @@ function Settings() {
         }
 
         try {
+            budgetExceeded && updateBudgetAlert("Budget exceeded");
             updateUserSettingsStore({ totalBudgetLimit, categoryLimits: categoryBudgetLimits, alertsEnabled, budgetExceeded });
             Swal.fire({
                 title: 'Success!',

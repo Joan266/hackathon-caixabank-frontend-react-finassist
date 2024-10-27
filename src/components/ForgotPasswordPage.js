@@ -1,21 +1,34 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
+import Swal from 'sweetalert2';
 
-function ForgotPasswordPage() {
-    const [email, setEmail] = useState(''); 
-    const [message, setMessage] = useState(''); 
+export default function ForgotPasswordPage() {
+    const [email, setEmail] = useState('');
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-        // Simulate sending a password recovery email.
-        // Instructions:
-        // - If the email matches 'user@example.com', display a success message.
-        // - If the email does not match, display an error message indicating the email is not found.
+        if (email === 'user@example.com') {
+            await Swal.fire({
+                title: 'Success!',
+                text: 'A password recovery email has been sent to your email address.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        } else {
+            await Swal.fire({
+                title: 'Error!',
+                text: "The email address you entered is not found.",
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        setEmail('');
     };
 
     return (
-        <Box sx={{ mt: 8 }}>
+        <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8, p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
             <Typography variant="h4" gutterBottom>
                 Forgot Password
             </Typography>
@@ -27,15 +40,12 @@ function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     fullWidth
                     required
-                    sx={{ mb: 2 }}
+                    margin="normal"
                 />
                 <Button variant="contained" color="primary" type="submit">
                     Send Reset Link
                 </Button>
             </form>
-            {message && <Typography color="secondary" sx={{ mt: 2 }}>{message}</Typography>}
         </Box>
     );
 }
-
-export default ForgotPasswordPage;

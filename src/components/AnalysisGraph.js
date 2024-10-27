@@ -3,16 +3,10 @@ import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from 'recharts';
 import { allCategories } from '../constants/categories';
-
+import calculateTransactionsTotalData from '../utils/calculateTransactionsTotalData';
 function AnalysisGraph() {
     const transactions = useStore(transactionsStore);
-
-    const totalIncome = transactions
-        .filter(transaction => transaction.type === 'Income')
-        .reduce((total, transaction) => total + transaction.amount, 0);
-    const totalExpense = transactions
-        .filter(transaction => transaction.type === 'Expense')
-        .reduce((total, transaction) => total + transaction.amount, 0);
+    const { totalExpense, totalIncome } = calculateTransactionsTotalData(transactions);
 
     const data1 = [
         { label: 'Expenses', value: totalExpense },
@@ -24,8 +18,8 @@ function AnalysisGraph() {
         const amount = categoryTransactions.reduce((total, transaction) => total + transaction.amount, 0);
         return { label: category, value: amount };
     });
-    const COLORS1 = ['#2e96ff', '#02b2af']; 
-    const COLORS2 = ['#03008d', '#2731c8', '#60009b', '#b800d8', '#2e96ff', '#02b2af']; 
+    const COLORS1 = ['#2e96ff', '#02b2af'];
+    const COLORS2 = ['#03008d', '#2731c8', '#60009b', '#b800d8', '#2e96ff', '#02b2af'];
 
     return (
         <ResponsiveContainer width="100%" height={400}>

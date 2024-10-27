@@ -3,40 +3,41 @@ import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import { userSettingsStore } from '../stores/userSettingsStore';
 import { Alert, Collapse } from '@mui/material';
+import calculateTransactionsTotalData from '../utils/calculateTransactionsTotalData';
+import { expenseCategories } from '../constants/categories';
 
 function AlertBanner() {
     const transactions = useStore(transactionsStore);
-    const userSettings = useStore(userSettingsStore);
+    const { totalBudgetLimit, categoryLimits, alertsEnabled } = useStore(userSettingsStore);
 
-    // Extract the necessary values from user settings (budget limits, category limits, alerts status).
-    const { totalBudgetLimit, categoryLimits, alertsEnabled } = userSettings;
+    const { totalExpense } = calculateTransactionsTotalData(transactions);
 
-    // If alerts are disabled in the settings, return null to avoid rendering the component.
     if (!alertsEnabled) return null;
 
-    // Calculate the total expenses from the transaction data.
-    const totalExpenses = 0; // Replace with logic to calculate total expenses.
+    const overTotalBudget = totalExpense > totalBudgetLimit;
 
-    // Check if the total expenses exceed the total budget limit.
-    const overTotalBudget = false; // Replace with logic to compare totalExpenses and totalBudgetLimit.
+    const exceededCategories = expenseCategories.map(category => {
+        const categoryTransactions = transactions.filter(transaction => transaction.category === category);
+        const amount = categoryTransactions.reduce((total, transaction) => total + transaction.amount, 0);
+        const categoryExceeded = amount > categoryLimits[category];
 
-    // Calculate expenses per category and check if any category limit has been exceeded.
-    const exceededCategories = []; // Replace with logic to check which categories exceeded their limits.
+        return { label: category, amount, limit: categoryLimits[category], categoryExceeded };
+    }).filter(cat => cat.categoryExceeded);
 
     return (
         <div>
-            {/* Total limit alert */}
             <Collapse in={overTotalBudget}>
                 <Alert severity="warning" sx={{ mb: 2 }}>
-                    You have exceeded your total budget limit of {totalBudgetLimit} €!
+                    You have exceeded your total budget limit of {totalBudgetLimit} €! Your total expenses are {totalExpense.toFixed(2)} €.
                 </Alert>
             </Collapse>
 
-            {/* Alerts by category */}
-            {exceededCategories.map((category) => (
-                <Alert severity="warning" sx={{ mb: 2 }} key={category}>
-                    You have exceeded your budget limit for {category} ({categoryLimits[category]} €)!
-                </Alert>
+            {exceededCategories.map(({ label, amount, limit }) => (
+                <Collapse in={true} key={label}>
+                    <Alert severity="warning" sx={{ mb: 2 }}>
+                        You have exceeded your budget limit for {label} ({limit} €)! Total spent: {amount.toFixed(2)} €.
+                    </Alert>
+                </Collapse>
             ))}
         </div>
     );

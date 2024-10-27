@@ -8,7 +8,8 @@ import {
     TextField,
     Typography,
     Alert,
-    Stack
+    Stack,
+    Link
 } from '@mui/material';
 
 function LoginPage() {
@@ -26,21 +27,11 @@ function LoginPage() {
 
     const handleLogin = (e) => {
         e.preventDefault();
-
-        // Validate that fields are not empty
-        // Instructions:
-        // - Check if the email and password fields are filled.
         if (!email || !password) {
-            // - If either is empty, set an appropriate error message.
             setError("Missing credentials.")
             return;
         }
 
-        // Validate credentials
-        // Instructions:
-        // - Check if the entered credentials match the default credentials or the stored user credentials.
-        // - If valid, call the `login` function and navigate to the homepage.
-        // - If invalid, set an error message.
         if (!(email === defaultCredentials.email && password === defaultCredentials.password) && !(email === user?.email && password === user?.password)) {
             setError("Not matching credentials.")
             return;
@@ -51,11 +42,10 @@ function LoginPage() {
         setError(null);
         setTimeout(() => {
             navigate('/dashboard');
-        }, 2000);
+        }, 1250);
     };
 
     const handleShowDefaultCredentials = () => {
-        // Show default credentials in case the user requests it
         setEmail(defaultCredentials.email);
         setPassword(defaultCredentials.password);
         setShowCredentials(true);
@@ -71,7 +61,7 @@ function LoginPage() {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => setShowCredentials(handleShowDefaultCredentials)}
+                    onClick={handleShowDefaultCredentials}
                 >Show Credentials
                 </Button>
             </Stack>
@@ -105,10 +95,7 @@ function LoginPage() {
                 </Button>
             </form>
 
-            {/* Show error message when applicable */}
-            {/* - Use the Alert component to display the error message if one exists. */}
-            {/* - Ensure that registration and forgot password options are displayed below the error message if present. */}
-
+       
             {error && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                     {error}
@@ -125,6 +112,11 @@ function LoginPage() {
                     <strong>Password:</strong> {defaultCredentials.password}
                 </Alert>
             )}
+             <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+                <Link href="/recoverpassword" style={{ color: '#1976d2' }}>
+                    Forgot Password?
+                </Link>
+            </Typography>
         </Box>
     );
 }

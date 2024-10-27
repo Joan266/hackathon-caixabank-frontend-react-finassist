@@ -3,13 +3,12 @@ import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import { Paper, Typography } from '@mui/material';
 import dayjs from 'dayjs';
+import calculateTransactionsTotalData  from '../utils/calculateTransactionsTotalData';
 
 function Statistics() {
     const transactions = useStore(transactionsStore);
-
+    const { totalExpense } = calculateTransactionsTotalData(transactions);
     const expenses = transactions.filter(transaction => transaction.type === 'Expense');
-
-    const totalExpense = expenses.reduce((total, transaction) => total + transaction.amount, 0);
 
     const uniqueDates = [...new Set(expenses.map(transaction => dayjs(transaction.date).format('YYYY-MM-DD')))];
     const averageDailyExpense = uniqueDates.length > 0 ? (totalExpense / uniqueDates.length) : 0;

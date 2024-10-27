@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import {
@@ -23,42 +23,71 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import ExportButton from './ExportButton';
+import { userSettingsStore } from '../stores/userSettingsStore';
 
 function Analysis() {
     const transactions = useStore(transactionsStore);
-
+    const { totalBudgetLimit } = useStore(userSettingsStore);
     const [timeFrame, setTimeFrame] = useState('monthly');
     const [reportType, setReportType] = useState('trend');
 
-    const trendData = transactions.reduce((acc, transaction) => {
-        const date = new Date(transaction.date);
-        const monthYear = `${date.getMonth() + 1}/${date.getFullYear()}`;
+    const trendData = useMemo(() => {
+        const data = transactions.reduce((acc, transaction) => {
+            const date = new Date(transaction.date);
+            let key;
 
-        if (!acc[monthYear]) {
-            acc[monthYear] = { key: monthYear, income: 0, expense: 0 };
-        }
+            switch (timeFrame) {
+                case 'daily':
+                    key = date.toLocaleDateString();
+                    break;
+                case 'weekly':
+                    const weekStart = new Date(date.setDate(date.getDate() - date.getDay()));
+                    key = `${weekStart.getDate()}/${weekStart.getMonth() + 1}/${weekStart.getFullYear()}`;
+                    break;
+                case 'monthly':
+                    key = `${date.getMonth() + 1}/${date.getFullYear()}`;
+                    break;
+                case 'yearly':
+                    key = `${date.getFullYear()}`;
+                    break;
+                default:
+                    key = `${date.getMonth() + 1}/${date.getFullYear()}`;
+            }
 
-        if (transaction.type === 'Income') {
-            acc[monthYear].income += transaction.amount;
-        } else {
-            acc[monthYear].expense += transaction.amount;
-        }
+            if (!acc[key]) {
+                acc[key] = { key, income: 0, expense: 0 };
+            }
 
-        return acc;
-    }, {});
+            if (transaction.type === 'Income') {
+                acc[key].income += transaction.amount;
+            } else {
+                acc[key].expense += transaction.amount;
+            }
 
-    const trendDataArray = Object.values(trendData);
+            return acc;
+        }, {});
 
-    const budgetData = [
-        { key: 'Category 1', budget: 500, actual: 400 },
-        { key: 'Category 2', budget: 300, actual: 250 },
-        { key: 'Category 3', budget: 600, actual: 700 },
-    ];
+        return Object.values(data);
+    }, [transactions, timeFrame]);
 
-    const exportData = reportType === 'trend' ? trendDataArray : budgetData;
+    const budgetData = useMemo(() => {
+        const data = trendData.map(item => {
+            const actualExpense = item.expense;
+            const budget = totalBudgetLimit; 
+
+            return {
+                key: item.key,
+                budget,
+                actual: actualExpense,
+            };
+        });
+        return data;
+    }, [trendData, totalBudgetLimit]);
+
+    const exportData = reportType === 'trend' ? trendData : budgetData;
     const exportHeaders = reportType === 'trend'
         ? ['Date', 'Income', 'Expense']
-        : ['Category', 'Budget', 'Actual'];
+        : ['Date', 'Budget', 'Actual'];
 
     return (
         <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
@@ -130,7 +159,7 @@ function Analysis() {
                                 Income and Expenses Trend
                             </Typography>
                             <ResponsiveContainer width="100%" height={400}>
-                                <LineChart data={trendDataArray}>
+                                <LineChart data={trendData}>
                                     <XAxis dataKey="key" />
                                     <YAxis />
                                     <Tooltip />

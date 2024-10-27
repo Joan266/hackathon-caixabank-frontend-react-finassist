@@ -10,6 +10,7 @@ import Analysis from './components/Analysis';
 import Settings from './components/Settings';
 import SupportPage from './components/SupportPage';
 import LoginPage from './components/LoginPage';
+import ForgotPasswordPage from './components/ForgotPasswordPage';
 import RegisterPage from './components/RegisterPage';
 import Logout from './components/Logout';
 import Footer from './components/Footer';
@@ -92,9 +93,9 @@ function App() {
                 display: 'flex',
                 flexDirection: 'column',
                 textAlign: 'center',
+                height: '100%'
               }}
             >
-              {/* <BudgetAlert /> */}
               <Routes>
                 <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -106,6 +107,7 @@ function App() {
                   <Route path="/logout" element={<Logout />} />
                 </Route>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/recoverpassword" element={<ForgotPasswordPage />} />
                 <Route path="/register" element={<RegisterPage />} />
               </Routes>
               <Footer />

@@ -5,6 +5,7 @@ import ExportButton from './ExportButton';
 import DownloadProfilerData from './DownloadProfilerData';
 import { onRenderCallback } from '../utils/onRenderCallback';
 import { transactionsStore } from '../stores/transactionStore';
+import calculateTransactionsTotalData from '../utils/calculateTransactionsTotalData';
 
 const AnalysisGraph = React.lazy(() => import('./AnalysisGraph'));
 const BalanceOverTime = React.lazy(() => import('./BalanceOverTime'));
@@ -14,15 +15,9 @@ const RecentTransactions = React.lazy(() => import('./RecentTransactions'));
 
 function Dashboard() {
     const transactions = useStore(transactionsStore);
+    const { totalExpense, totalIncome, totalBalance } = calculateTransactionsTotalData(transactions);
 
-    const totalIncome = transactions
-        .filter(transaction => transaction.type === 'Income')
-        .reduce((total, transaction) => total + transaction.amount, 0);
-    const totalExpense = transactions
-        .filter(transaction => transaction.type === 'Expense')
-        .reduce((total, transaction) => total + transaction.amount, 0);
 
-    const balance = totalIncome - totalExpense;
 
     return (
         <Profiler id="Dashboard" onRender={onRenderCallback}>
@@ -32,7 +27,7 @@ function Dashboard() {
                     gutterBottom
                     sx={{
                         fontWeight: 'bold',
-                        color: 'primary.main', 
+                        color: 'primary.main',
                         textAlign: 'left',
                     }}
                 >
@@ -69,12 +64,12 @@ function Dashboard() {
                             <Typography variant="h6" gutterBottom>
                                 Balance
                             </Typography>
-                            <Typography variant="h5" data-testid="balance">
-                                {balance.toFixed(2)} €
+                            <Typography variant="h5" data-testid="Balance">
+                                {totalBalance.toFixed(2)} €
                             </Typography>
-                            {balance < 0 && (
+                            {totalBalance < 0 && (
                                 <Typography color="error" variant="body2">
-                                    Warning: Your balance is negative!
+                                    Warning: Your Balance is negative!
                                 </Typography>
                             )}
                         </Paper>
