@@ -94,7 +94,7 @@ function App() {
                 textAlign: 'center',
               }}
             >
-              <BudgetAlert />
+              {/* <BudgetAlert /> */}
               <Routes>
                 <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />

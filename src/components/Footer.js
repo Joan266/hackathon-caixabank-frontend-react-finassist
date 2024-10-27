@@ -75,7 +75,7 @@ const Footer = () => {
                     aria-label="LinkedIn"
                     color="inherit"
                     component="a"
-                    href="https://linkedin.com" 
+                    href="https://www.linkedin.com/in/joan-alemany-chulilla/" 
                     target="_blank"
                     rel="noopener noreferrer"
                 >
@@ -86,7 +86,7 @@ const Footer = () => {
                     aria-label="GitHub"
                     color="inherit"
                     component="a"
-                    href="https://www.linkedin.com/in/joan-alemany-chulilla/" 
+                    href="https://github.com/Joan266" 
                     target="_blank"
                     rel="noopener noreferrer"
                 >

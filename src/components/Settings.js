@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
-import { userSettingsStore } from '../stores/userSettingsStore';
+import { userSettingsStore, updateUserSettingsStore } from '../stores/userSettingsStore';
 import { budgetAlertStore, updateBudgetAlert } from '../stores/budgetAlertStore';
 import {
     Box,
@@ -13,7 +13,6 @@ import {
     Paper,
     Alert,
 } from '@mui/material';
-import { expenseCategories } from '../constants/categories';
 import { transactionsStore } from '../stores/transactionStore';
 import Swal from 'sweetalert2';
 
@@ -22,7 +21,6 @@ function Settings() {
         totalBudgetLimit: storedBudgetLimit,
         categoryLimits,
         alertsEnabled: storedAlertsEnabled,
-        budgetExceeded: storedBudgetExceeded,
     } = useStore(userSettingsStore);
     const store = useStore(userSettingsStore);
     const transactions = useStore(transactionsStore);
@@ -45,7 +43,7 @@ function Settings() {
     const handleSave = async (e) => {
         e.preventDefault();
 
-        const totalCategoryLimit = categoryBudgetLimits.reduce((total, limit) => total + Number(limit), 0);
+        const totalCategoryLimit = Object.values(categoryBudgetLimits).reduce((total, limit) => total + Number(limit), 0);
         if (totalCategoryLimit > totalBudgetLimit) {
             Swal.fire({
                 title: 'Error!',
@@ -57,7 +55,7 @@ function Settings() {
         }
 
         try {
-            updateBudgetAlert({ totalBudgetLimit, categoryLimits: categoryBudgetLimits, alertsEnabled });
+            updateUserSettingsStore({ totalBudgetLimit, categoryLimits: categoryBudgetLimits, alertsEnabled, budgetExceeded });
             Swal.fire({
                 title: 'Success!',
                 text: 'Settings saved successfully.',
@@ -104,7 +102,7 @@ function Settings() {
                 <TextField
                     type="number"
                     value={totalBudgetLimit}
-                    onChange={(e) => setTotalBudgetLimit(e.target.value)}
+                    onChange={(e) => setTotalBudgetLimit(Number(e.target.value))}
                     fullWidth
                     margin="normal"
                     slotProps={{ htmlInput: { min: 0, step: '0.01' } }}
@@ -122,7 +120,7 @@ function Settings() {
                                 type="number"
                                 value={limit}
                                 onChange={(e) => {
-                                    const newLimits = { ...categoryBudgetLimits, [category]: Number(e.target.value) }; 
+                                    const newLimits = { ...categoryBudgetLimits, [category]: Number(e.target.value) };
                                     setCategoryBudgetLimits(newLimits);
                                 }}
                                 fullWidth
