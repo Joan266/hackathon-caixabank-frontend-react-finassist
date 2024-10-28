@@ -2,27 +2,18 @@ import React, { useState, useCallback } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore, deleteTransaction } from '../stores/transactionStore';
 import TransactionForm from './TransactionForm';
-import TransactionRow from './TransactionRow.js';
 import { allCategories } from '../constants/categories';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Button,
-    Select,
-    MenuItem,
-    InputLabel,
-    FormControl,
     Box,
+    Button,
     Typography,
-    TablePagination
+    TablePagination,
+    Paper
 } from '@mui/material';
 import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
 import Swal from 'sweetalert2';
+import SelectFieldComponent from './SelectFieldComponent.js';
+import TransactionsTable from './TransactionsTable'; // Importing TransactionsTable
 
 function TransactionList() {
     const transactions = useStore(transactionsStore);
@@ -96,6 +87,28 @@ function TransactionList() {
         goToPage(0);
     };
 
+    const columns = [
+        { header: 'Description', key: 'description' },
+        { header: 'Amount (€)', key: 'amount', accessor: (transaction) => transaction.amount.toFixed(2) },
+        { header: 'Type', key: 'type' },
+        { header: 'Category', key: 'category' },
+        { header: 'Date', key: 'date', accessor: (transaction) => new Date(transaction.date).toLocaleDateString() },
+        {
+            header: 'Actions',
+            key: 'actions',
+            accessor: (transaction) => (
+                <>
+                    <Button onClick={() => handleEdit(transaction)} color="primary">
+                        Edit
+                    </Button>
+                    <Button onClick={() => handleDelete(transaction.id)} color="secondary" sx={{ ml: 1 }}>
+                        Delete
+                    </Button>
+                </>
+            ),
+        },
+    ];
+
     return (
         <Box sx={{ mt: 4 }}>
             <Typography
@@ -115,71 +128,29 @@ function TransactionList() {
             </Button>
 
             <Box sx={{ display: 'flex', gap: 2, my: 2 }}>
-                <FormControl sx={{ minWidth: 120 }}>
-                    <InputLabel id="filter-category-label">Category</InputLabel>
-                    <Select
-                        labelId="filter-category-label"
-                        value={filterCategory}
-                        onChange={(e) => setFilterCategory(e.target.value)}
-                    >
-                        <MenuItem value="">All</MenuItem>
-                        {allCategories.map(category => (
-                            <MenuItem key={category} value={category}>{category}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                <FormControl sx={{ minWidth: 120 }}>
-                    <InputLabel id="filter-type-label">Type</InputLabel>
-                    <Select
-                        labelId="filter-type-label"
-                        value={filterType}
-                        onChange={(e) => setFilterType(e.target.value)}
-                    >
-                        <MenuItem value="">All</MenuItem>
-                        <MenuItem value="Income">Income</MenuItem>
-                        <MenuItem value="Expense">Expense</MenuItem>
-                    </Select>
-                </FormControl>
-
-                <FormControl sx={{ minWidth: 150 }}>
-                    <InputLabel id="sort-field-label">Sort By</InputLabel>
-                    <Select
-                        labelId="sort-field-label"
-                        value={sortConfig.property}
-                        onChange={(e) => setSortConfig({ ...sortConfig, property: e.target.value })}
-                    >
-                        <MenuItem value="">None</MenuItem>
-                        <MenuItem value="amount">Amount</MenuItem>
-                        <MenuItem value="date">Date</MenuItem>
-                    </Select>
-                </FormControl>
+                <SelectFieldComponent
+                    label="Category"
+                    value={filterCategory}
+                    onChange={(e) => setFilterCategory(e.target.value)}
+                    options={allCategories}
+                />
+                <SelectFieldComponent
+                    label="Type"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)} 
+                    options={["Income", "Expense"]}
+                />
+                <SelectFieldComponent
+                    label="Sort By"
+                    value={sortConfig.property}
+                    onChange={(e) => setSortConfig({ ...sortConfig, property: e.target.value })} 
+                    options={["Amount", "Date"]}
+                />
             </Box>
 
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Amount (€)</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Category</TableCell>
-                            <TableCell>Date</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {dataCurrentPage.map(transaction => (
-                            <TransactionRow
-                                key={transaction.id} 
-                                transaction={transaction} 
-                                onEdit={handleEdit} 
-                                onDelete={handleDelete} 
-                            />
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <Paper>
+                <TransactionsTable transactions={dataCurrentPage} columns={columns} />
+            </Paper>
 
             <TablePagination
                 component="div"

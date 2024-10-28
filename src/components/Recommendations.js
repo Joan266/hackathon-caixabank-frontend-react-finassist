@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
-import { CircularProgress, Typography, Paper } from '@mui/material';
+import { CircularProgress, Paper } from '@mui/material';
 import dayjs from 'dayjs';
+import { Typography } from '@mui/material';
+import RecommendationCard from './RecommendationCard'; 
 
 function Recommendations() {
     const transactions = useStore(transactionsStore);
@@ -41,24 +43,38 @@ function Recommendations() {
             dayjs(transaction.date).year() === currentYear)
         .reduce((total, transaction) => total + transaction.amount, 0);
 
-    let message = '';
+    let recommendations = [];
 
     if (expenseLastMonth === 0) {
-        message = "You had no expenses last month. Keep recording your transactions to track your spending!";
+        recommendations.push({
+            title: "No Expenses Last Month",
+            message: "You had no expenses last month. Keep recording your transactions to track your spending!"
+        });
     } else if (expenseThisMonth > expenseLastMonth) {
         const increase = ((expenseThisMonth - expenseLastMonth) / expenseLastMonth) * 100;
-        message = `Your expenses have increased by ${increase.toFixed(2)}%. Consider reviewing your spending habits.`;
+        recommendations.push({
+            title: "Expenses Increased",
+            message: `Your expenses have increased by ${increase.toFixed(2)}%. Consider reviewing your spending habits.`
+        });
     } else if (expenseThisMonth < expenseLastMonth) {
         const decrease = ((expenseLastMonth - expenseThisMonth) / expenseLastMonth) * 100;
-        message = `Great job! Your expenses have decreased by ${decrease.toFixed(2)}%. Keep it up!`;
+        recommendations.push({
+            title: "Great Job!",
+            message: `Your expenses have decreased by ${decrease.toFixed(2)}%. Keep it up!`
+        });
     } else {
-        message = "Your expenses have remained the same compared to last month.";
+        recommendations.push({
+            title: "No Change",
+            message: "Your expenses have remained the same compared to last month."
+        });
     }
 
     return (
         <Paper sx={{ padding: 2, mt: 2 }}>
             <Typography variant="h5">Recommendations</Typography>
-            <Typography>{message}</Typography>
+            {recommendations.map((rec, index) => (
+                <RecommendationCard key={index} title={rec.title} message={rec.message} />
+            ))}
         </Paper>
     );
 }

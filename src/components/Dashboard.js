@@ -6,6 +6,7 @@ import DownloadProfilerData from './DownloadProfilerData';
 import { onRenderCallback } from '../utils/onRenderCallback';
 import { transactionsStore } from '../stores/transactionStore';
 import calculateTransactionsTotalData from '../utils/calculateTransactionsTotalData';
+import dayjs from 'dayjs';
 
 const AnalysisGraph = React.lazy(() => import('./AnalysisGraph'));
 const BalanceOverTime = React.lazy(() => import('./BalanceOverTime'));
@@ -17,7 +18,19 @@ function Dashboard() {
     const transactions = useStore(transactionsStore);
     const { totalExpense, totalIncome, totalBalance } = calculateTransactionsTotalData(transactions);
 
+    const expenses = transactions.filter(transaction => transaction.type === 'Expense');
+    const uniqueDates = [...new Set(expenses.map(transaction => dayjs(transaction.date).format('YYYY-MM-DD')))];
+    const averageDailyExpense = uniqueDates.length > 0 ? (totalExpense / uniqueDates.length) : 0;
 
+    const categoryExpenses = expenses.reduce((acc, transaction) => {
+        acc[transaction.category] = (acc[transaction.category] || 0) + transaction.amount;
+        return acc;
+    }, {});
+
+    const maxCategory = Object.keys(categoryExpenses).length > 0
+        ? Object.keys(categoryExpenses).reduce((a, b) => categoryExpenses[a] > categoryExpenses[b] ? a : b)
+        : null;
+    const maxCategoryAmount = maxCategory ? categoryExpenses[maxCategory] : 0;
 
     return (
         <Profiler id="Dashboard" onRender={onRenderCallback}>
@@ -92,7 +105,12 @@ function Dashboard() {
                 <Grid2 container spacing={4} sx={{ mt: 4 }}>
                     <Grid2 size={{ xs: 12, md: 6 }}>
                         <React.Suspense fallback={<Typography>Loading...</Typography>}>
-                            <Statistics />
+                            <Statistics
+                                title="Expense Statistics"
+                                averageExpense={averageDailyExpense}
+                                maxCategory={maxCategory}
+                                maxCategoryAmount={maxCategoryAmount}
+                            />
                         </React.Suspense>
                     </Grid2>
                     <Grid2 size={{ xs: 12, md: 6 }}>

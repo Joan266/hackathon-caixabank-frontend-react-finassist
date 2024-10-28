@@ -6,24 +6,12 @@ import {
     Typography,
     Grid2,
     Paper,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
 } from '@mui/material';
-import {
-    LineChart,
-    Line,
-    BarChart,
-    Bar,
-    XAxis,
-    YAxis,
-    Tooltip,
-    Legend,
-    ResponsiveContainer,
-} from 'recharts';
 import ExportButton from './ExportButton';
 import { userSettingsStore } from '../stores/userSettingsStore';
+import IncomeExpenseTrendChart from './IncomeExpenseTrendChart';
+import BudgetActualChart from './BudgetActualChart';
+import SelectFieldComponent from './SelectFieldComponent';
 
 function Analysis() {
     const transactions = useStore(transactionsStore);
@@ -73,7 +61,7 @@ function Analysis() {
     const budgetData = useMemo(() => {
         const data = trendData.map(item => {
             const actualExpense = item.expense;
-            const budget = totalBudgetLimit; 
+            const budget = totalBudgetLimit;
 
             return {
                 key: item.key,
@@ -96,7 +84,7 @@ function Analysis() {
                 gutterBottom
                 sx={{
                     fontWeight: 'bold',
-                    color: 'primary.main', 
+                    color: 'primary.main',
                     textAlign: 'left',
                 }}
             >
@@ -111,35 +99,21 @@ function Analysis() {
 
             <Grid2 container spacing={2} alignItems="center" sx={{ mb: 4 }}>
                 <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="timeframe-select-label">Time Frame</InputLabel>
-                        <Select
-                            labelId="timeframe-select-label"
-                            id="timeframe-select"
-                            value={timeFrame}
-                            onChange={(e) => setTimeFrame(e.target.value)}
-                        >
-                            <MenuItem value="daily">Daily</MenuItem>
-                            <MenuItem value="weekly">Weekly</MenuItem>
-                            <MenuItem value="monthly">Monthly</MenuItem>
-                            <MenuItem value="yearly">Yearly</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <SelectFieldComponent
+                        label="Time Frame"
+                        value={timeFrame}
+                        onChange={(e) => setTimeFrame(e.target.value)}
+                        options={["Daily", "Weekly", "Monthly", "Yearly"]}
+                    />
                 </Grid2>
 
                 <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
-                    <FormControl fullWidth>
-                        <InputLabel id="report-type-select-label">Report Type</InputLabel>
-                        <Select
-                            labelId="report-type-select-label"
-                            id="report-type-select"
-                            value={reportType}
-                            onChange={(e) => setReportType(e.target.value)}
-                        >
-                            <MenuItem value="trend">Trend Analysis</MenuItem>
-                            <MenuItem value="budget">Budget vs. Actual</MenuItem>
-                        </Select>
-                    </FormControl>
+                    <SelectFieldComponent
+                        label="Report Type"
+                        value={reportType}
+                        onChange={(e) => setReportType(e.target.value)}
+                        options={["Trend Analysis", "Budget vs. Actual"]}
+                    />
                 </Grid2>
 
                 <Grid2 size={{ xs: 12, md: 4, sm: 6 }}>
@@ -154,21 +128,7 @@ function Analysis() {
             {reportType === 'trend' && (
                 <Grid2 container spacing={4}>
                     <Grid2 size={{ xs: 12, md: 12 }}>
-                        <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
-                            <Typography variant="h6" gutterBottom color="text.secondary">
-                                Income and Expenses Trend
-                            </Typography>
-                            <ResponsiveContainer width="100%" height={400}>
-                                <LineChart data={trendData}>
-                                    <XAxis dataKey="key" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Line type="monotone" dataKey="income" stroke="#28B463" name="Income" />
-                                    <Line type="monotone" dataKey="expense" stroke="#E74C3C" name="Expenses" />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </Paper>
+                        <IncomeExpenseTrendChart data={trendData} />
                     </Grid2>
                 </Grid2>
             )}
@@ -176,21 +136,7 @@ function Analysis() {
             {reportType === 'budget' && (
                 <Grid2 container spacing={4}>
                     <Grid2 size={{ xs: 12, md: 12 }}>
-                        <Paper sx={{ padding: 2, boxShadow: 3, borderRadius: 2 }}>
-                            <Typography variant="h6" gutterBottom color="text.secondary">
-                                Budget vs. Actual Expenses
-                            </Typography>
-                            <ResponsiveContainer width="100%" height={400}>
-                                <BarChart data={budgetData}>
-                                    <XAxis dataKey="key" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Legend />
-                                    <Bar dataKey="budget" fill="#4CAF50" name="Budget" />
-                                    <Bar dataKey="actual" fill="#FF9800" name="Actual" />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </Paper>
+                        <BudgetActualChart data={budgetData} />
                     </Grid2>
                 </Grid2>
             )}

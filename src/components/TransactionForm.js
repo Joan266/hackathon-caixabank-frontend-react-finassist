@@ -5,19 +5,16 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    TextField,
     Button,
-    Select,
-    MenuItem,
-    InputLabel,
-    FormControl,
     Box,
     Grid2
 } from '@mui/material';
 import Swal from 'sweetalert2';
 import { expenseCategories, incomeCategories } from '../constants/categories';
 import { expenseCategoryKeywords, incomeCategoriesKeywords } from '../constants/categoryKeywords';
-
+import SelectFieldComponent from './SelectFieldComponent';
+import DateFieldComponent from './DateFieldComponent';
+import TextFieldComponent from './TextFieldComponent';
 function TransactionForm({ transactionToEdit, onClose }) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
@@ -88,23 +85,13 @@ function TransactionForm({ transactionToEdit, onClose }) {
         };
 
         try {
-            if (transactionToEdit) {
-                addTransaction(transaction);
-                Swal.fire({
-                    title: 'Success!',
-                    text: `Transaction updated successfully:\n\nDescription: ${transaction.description}\nAmount: €${transaction.amount.toFixed(2)}\nType: ${transaction.type}\nCategory: ${transaction.category}\nDate: ${new Date(transaction.date).toLocaleDateString()}`,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                addTransaction(transaction);
-                Swal.fire({
-                    title: 'Success!',
-                    text: `Transaction added successfully:\n\nDescription: ${transaction.description}\nAmount: €${transaction.amount.toFixed(2)}\nType: ${transaction.type}\nCategory: ${transaction.category}\nDate: ${new Date(transaction.date).toLocaleDateString()}`,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-            }
+            addTransaction(transaction);
+            Swal.fire({
+                title: 'Success!',
+                text: `Transaction ${transactionToEdit ? "updated" : "added"} successfully:\n\nDescription: ${transaction.description}\nAmount: €${transaction.amount.toFixed(2)}\nType: ${transaction.type}\nCategory: ${transaction.category}\nDate: ${new Date(transaction.date).toLocaleDateString()}`,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
 
             onClose();
 
@@ -125,81 +112,55 @@ function TransactionForm({ transactionToEdit, onClose }) {
                 <DialogContent>
                     <Grid2 container spacing={2}>
                         <Grid2 item xs={12}>
-                            <TextField
+                            <TextFieldComponent
                                 label="Description"
                                 value={description}
                                 onChange={(e) => {
                                     const desc = e.target.value;
                                     setDescription(desc);
-                                    if (!transactionToEdit) {
-                                        setCategory(findCategoryFromDescription(desc,type));
-                                    }
+                                    if (!transactionToEdit) setCategory(findCategoryFromDescription(desc, type));
                                 }}
-                                fullWidth
-                                margin="normal"
                                 required
-                                name="description"
                             />
                         </Grid2>
                         <Grid2 item xs={12} sm={6}>
-                            <TextField
+                            <TextFieldComponent
                                 label="Amount (€)"
                                 type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
-                                fullWidth
-                                margin="normal"
                                 required
-                                slotProps={{ htmlInput: { min: 0, step: '0.01' } }}
-                                name="amount"
+                                slotProps={{ input: { min: 0, step: '0.01' } }}  // Updated to use slotProps
                             />
                         </Grid2>
                         <Grid2 item xs={12} sm={6}>
-                            <FormControl fullWidth margin="normal" required>
-                                <InputLabel id="type-label">Type</InputLabel>
-                                <Select
-                                    labelId="type-label"
-                                    value={type}
-                                    onChange={(e) => {
-                                        const selectedType = e.target.value;
-                                        setType(selectedType);
-                                        setCategory(findCategoryFromDescription(description, selectedType));
-                                    }}
-                                    label="Type"
-                                    name="type"
-                                >
-                                    <MenuItem value="Income">Income</MenuItem>
-                                    <MenuItem value="Expense">Expense</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <SelectFieldComponent
+                                label="Type"
+                                value={type}
+                                onChange={(e) => {
+                                    const selectedType = e.target.value;
+                                    setType(selectedType);
+                                    setCategory(findCategoryFromDescription(description, selectedType));
+                                }}
+                                options={["Income", "Expense"]}
+                                required
+                            />
                         </Grid2>
                         <Grid2 item xs={12} sm={6}>
-                            <FormControl fullWidth margin="normal" required>
-                                <InputLabel id="category-label">Category</InputLabel>
-                                <Select
-                                    labelId="category-label"
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    label="Category"
-                                    name="category"
-                                >
-                                    {getCategoriesForType().map(cat => (
-                                        <MenuItem key={cat} value={cat}>{cat}</MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
+                            <SelectFieldComponent
+                                label="Category"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                options={getCategoriesForType()}
+                                required
+                            />
                         </Grid2>
                         <Grid2 item xs={12} sm={6}>
-                            <TextField
+                            <DateFieldComponent
                                 label="Date"
-                                type="date"
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                fullWidth
-                                margin="normal"
                                 required
-                                slotProps={{ inputLabel: { shrink: true, } }}
-                                name="date"
                             />
                         </Grid2>
                     </Grid2>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Profiler, Suspense, useMemo } from 'react';
 import { Box, Typography, CircularProgress, Paper, Avatar, List, ListItem, ListItemAvatar, ListItemText, TextField, Button, Alert } from '@mui/material';
 import { onRenderCallback } from '../utils/onRenderCallback';
-
+import ContactSupport from './ContactSupport';
 function SupportPage() {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -80,16 +80,10 @@ function SupportPage() {
                     <Paper sx={{ p: 3, borderRadius: 2, boxShadow: 3 }}>
                         <List>
                             {filteredUsers.map(user => (
-                                <ListItem key={user.id}>
-                                    <ListItemAvatar>
-                                        <Avatar>{user.name.charAt(0)}</Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText
-                                        primary={`${user.name} (${user.email})`}
-                                        secondary={`Phone: ${user.phone}, Company: ${user.company.name}`}
-                                    />
-                                    <Button href={`mailto:${user.email}`} variant="outlined">Contact</Button>
-                                </ListItem>
+                                <ContactSupport
+                                    key={user.id}
+                                    user={user}
+                                />
                             ))}
                         </List>
                     </Paper>
