@@ -22,7 +22,7 @@ function TransactionsTable({ transactions, columns }) {
                 </TableHead>
                 <TableBody>
                     {transactions.map(transaction => (
-                      <TransactionRow transaction={transaction} columns={columns}/>
+                      <TransactionRow key={transaction.id} transaction={transaction} columns={columns}/>
                     ))}
                 </TableBody>
             </Table>

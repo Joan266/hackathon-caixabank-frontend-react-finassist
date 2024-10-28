@@ -111,7 +111,7 @@ function TransactionForm({ transactionToEdit, onClose }) {
             <form onSubmit={handleSubmit}>
                 <DialogContent>
                     <Grid2 container spacing={2}>
-                        <Grid2 item xs={12}>
+                        <Grid2  size={{xs:12}}>
                             <TextFieldComponent
                                 label="Description"
                                 value={description}
@@ -123,7 +123,7 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                 required
                             />
                         </Grid2>
-                        <Grid2 item xs={12} sm={6}>
+                        <Grid2 size={{xs:12,sm:6}}>
                             <TextFieldComponent
                                 label="Amount (€)"
                                 type="number"

@@ -11,12 +11,15 @@ export const useTransactionListModifiers = (
 
     const { dataCurrentPage, totalPages, dataLength } = useMemo(() => {
         if (!transactions) return { dataCurrentPage: [], totalPages: 0, dataLength: 0 };
-        const sortedData = sortConfig?.property
-            ? [...transactions].sort((a, b) => {
-                const valueA = a[sortConfig.property];
-                const valueB = b[sortConfig.property];
 
-                if (sortConfig.property === 'date') {
+        const sortProperty = sortConfig?.property?.toLowerCase();
+
+        const sortedData = sortProperty
+            ? [...transactions].sort((a, b) => {
+                const valueA = a[sortProperty];
+                const valueB = b[sortProperty];
+
+                if (sortProperty === 'date') {
                     // Sort dates in descending order
                     return new Date(valueB) - new Date(valueA);
                 } else if (sortConfig.type === 'number') {
@@ -24,6 +27,7 @@ export const useTransactionListModifiers = (
                     return -(Number(valueA) - Number(valueB));
                 }
                 return 0;
+
             })
             : transactions;
 
@@ -44,7 +48,6 @@ export const useTransactionListModifiers = (
     const goToPage = (pageNumber) => {
         setPage(pageNumber);
     };
-
 
     return {
         dataCurrentPage,

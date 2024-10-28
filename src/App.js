@@ -17,18 +17,22 @@ import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import BudgetAlert from './components/BudgetAlert';
 import { authStore } from './stores/authStore';
-import Box from '@mui/material/Box';
-import { ThemeProvider, CssBaseline, createTheme } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
+import {
+  ThemeProvider,
+  CssBaseline,
+  createTheme,
+  Avatar,
+  IconButton,
+  Tooltip,
+  Box
+} from '@mui/material';
 import { NAVIGATION, AUTHNAVIGATION } from './constants/navigation';
 import CaixaBankIcon from './assets/caixabank-icon-blue.png';
 
 function App() {
   const { isAuthenticated, user } = useStore(authStore);
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
-  const [pathname, setPathname] = useState('/dashboard');
+  const [pathname, setPathname] = useState("");
 
   const router = useMemo(() => ({
     pathname,
@@ -96,20 +100,22 @@ function App() {
                 height: '100%'
               }}
             >
-              <Routes>
-                <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/transactions" element={<TransactionList />} />
-                  <Route path="/analysis" element={<Analysis />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/support" element={<SupportPage />} />
-                  <Route path="/logout" element={<Logout />} />
-                </Route>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/recoverpassword" element={<ForgotPasswordPage />} />
-                <Route path="/register" element={<RegisterPage />} />
-              </Routes>
+              <Box sx={{ mt: 4, px: { xs: 2, md: 4 } }} >
+                <Routes>
+                  <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/transactions" element={<TransactionList />} />
+                    <Route path="/analysis" element={<Analysis />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/support" element={<SupportPage />} />
+                    <Route path="/logout" element={<Logout />} />
+                  </Route>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/recoverpassword" element={<ForgotPasswordPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                </Routes>
+              </Box>
               <Footer />
             </Box>
           </DashboardLayout>

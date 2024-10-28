@@ -8,12 +8,12 @@ import {
     Button,
     Typography,
     TablePagination,
-    Paper
+    Grid2, 
 } from '@mui/material';
 import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
 import Swal from 'sweetalert2';
 import SelectFieldComponent from './SelectFieldComponent.js';
-import TransactionsTable from './TransactionsTable'; // Importing TransactionsTable
+import TransactionsTable from './TransactionsTable';
 
 function TransactionList() {
     const transactions = useStore(transactionsStore);
@@ -110,7 +110,7 @@ function TransactionList() {
     ];
 
     return (
-        <Box sx={{ mt: 4 }}>
+        <Box>  
             <Typography
                 variant="h4"
                 gutterBottom
@@ -127,40 +127,57 @@ function TransactionList() {
                 Add Transaction
             </Button>
 
-            <Box sx={{ display: 'flex', gap: 2, my: 2 }}>
-                <SelectFieldComponent
-                    label="Category"
-                    value={filterCategory}
-                    onChange={(e) => setFilterCategory(e.target.value)}
-                    options={allCategories}
-                />
-                <SelectFieldComponent
-                    label="Type"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)} 
-                    options={["Income", "Expense"]}
-                />
-                <SelectFieldComponent
-                    label="Sort By"
-                    value={sortConfig.property}
-                    onChange={(e) => setSortConfig({ ...sortConfig, property: e.target.value })} 
-                    options={["Amount", "Date"]}
+            <Grid2 container spacing={2} sx={{ my: 2, flexWrap: 'wrap' }}>
+                <Grid2 size={{xs:12,sm:4}}>
+                    <SelectFieldComponent
+                        label="Category"
+                        value={filterCategory}
+                        onChange={(e) => {
+                            setFilterCategory(e.target.value);
+                            goToPage(0);
+                        }}
+                        placeholder="All"
+                        options={allCategories}
+                    />
+                </Grid2>
+                <Grid2  size={{xs:12,sm:4}}>
+                    <SelectFieldComponent
+                        label="Type"
+                        value={filterType}
+                        onChange={(e) => {
+                            setFilterType(e.target.value);
+                            goToPage(0);
+                        }}
+                        placeholder="All"
+                        options={["Income", "Expense"]}
+                    />
+                </Grid2>
+                <Grid2  size={{xs:12,sm:4}}>
+                    <SelectFieldComponent
+                        label="Sort By"
+                        value={sortConfig.property}
+                        onChange={(e) => {
+                            setSortConfig({ ...sortConfig, property: e.target.value });
+                            goToPage(0);
+                        }}
+                        placeholder="None"
+                        options={["Amount", "Date"]}
+                    />
+                </Grid2>
+            </Grid2>
+
+            <Box sx={{ overflowX: 'auto' }}>
+                <TransactionsTable transactions={dataCurrentPage} columns={columns} />
+
+                <TablePagination
+                    component="div"
+                    count={dataLength}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Box>
-
-            <Paper>
-                <TransactionsTable transactions={dataCurrentPage} columns={columns} />
-            </Paper>
-
-            <TablePagination
-                component="div"
-                count={dataLength}
-                page={page}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-
             {openForm && (
                 <TransactionForm
                     transactionToEdit={editingTransaction}
