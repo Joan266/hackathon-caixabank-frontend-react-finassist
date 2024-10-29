@@ -1,6 +1,5 @@
 import React from 'react';
 import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-
 const SelectFieldComponent = ({
     label,
     value,
@@ -14,13 +13,13 @@ const SelectFieldComponent = ({
         <InputLabel>{label}</InputLabel>
         <Select value={value} onChange={onChange} label={label} {...props}>
             {placeholder && (
-                <MenuItem value="">
+                <MenuItem key={placeholder} value="">
                     {placeholder}
                 </MenuItem>
             )}
             {options.map(option => (
-                <MenuItem key={option} value={option}>
-                    {option}
+                <MenuItem key={option.value} value={option.value}>
+                    {option.text}
                 </MenuItem>
             ))}
         </Select>

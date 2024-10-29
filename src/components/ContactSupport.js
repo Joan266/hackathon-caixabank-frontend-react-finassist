@@ -1,7 +1,7 @@
 import React from 'react';
 import { ListItem, ListItemAvatar, ListItemText, Avatar, Button } from '@mui/material';
 
-function ContactSupport(user) {
+function ContactSupport({user}) {
   return (
     <ListItem key={user.id}>
       <ListItemAvatar>

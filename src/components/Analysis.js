@@ -18,8 +18,7 @@ function Analysis() {
     const { totalBudgetLimit } = useStore(userSettingsStore);
     const [timeFrame, setTimeFrame] = useState('monthly');
     const [reportType, setReportType] = useState('trend');
-
-    const trendData = useMemo(() => {
+    const { trendData, budgetData } = useMemo(() => {
         const data = transactions.reduce((acc, transaction) => {
             const date = new Date(transaction.date);
             let key;
@@ -46,7 +45,7 @@ function Analysis() {
                 acc[key] = { key, income: 0, expense: 0 };
             }
 
-            if (transaction.type === 'Income') {
+            if (transaction.type === 'income') {
                 acc[key].income += transaction.amount;
             } else {
                 acc[key].expense += transaction.amount;
@@ -54,12 +53,8 @@ function Analysis() {
 
             return acc;
         }, {});
-
-        return Object.values(data);
-    }, [transactions, timeFrame]);
-
-    const budgetData = useMemo(() => {
-        const data = trendData.map(item => {
+        const trendData = Object.values(data);
+        const budgetData = trendData.map(item => {
             const actualExpense = item.expense;
             const budget = totalBudgetLimit;
 
@@ -69,13 +64,14 @@ function Analysis() {
                 actual: actualExpense,
             };
         });
-        return data;
-    }, [trendData, totalBudgetLimit]);
+        
+        return { trendData, budgetData };
+    }, [totalBudgetLimit, timeFrame, transactions]);
 
     const exportData = reportType === 'trend' ? trendData : budgetData;
     const exportHeaders = reportType === 'trend'
-        ? ['Date', 'Income', 'Expense']
-        : ['Date', 'Budget', 'Actual'];
+        ? ['key', 'income', 'expense']
+        : ['key', 'budget', 'actual'];
 
     return (
         <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
@@ -103,7 +99,7 @@ function Analysis() {
                         label="Time Frame"
                         value={timeFrame}
                         onChange={(e) => setTimeFrame(e.target.value)}
-                        options={["Daily", "Weekly", "Monthly", "Yearly"]}
+                        options={[{text:"Daily", value:"daily"}, {text:"Weekly", value:"weekly"}, {text:"Monthly", value:"monthly"}, {text:"Yearly", value:"yearly"}]}
                     />
                 </Grid2>
 
@@ -112,7 +108,7 @@ function Analysis() {
                         label="Report Type"
                         value={reportType}
                         onChange={(e) => setReportType(e.target.value)}
-                        options={["Trend Analysis", "Budget vs. Actual"]}
+                        options={[{text:"Trend Analysis", value:"trend"}, {text:"Budget vs. Actual",value:"budget"}]}
                     />
                 </Grid2>
 

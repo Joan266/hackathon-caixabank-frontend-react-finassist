@@ -108,7 +108,10 @@ function TransactionList() {
             ),
         },
     ];
-
+    const transformedCategories = allCategories.map(category => ({
+        text: category,
+        value: category
+    }));
     return (
         <Box>  
             <Typography
@@ -137,7 +140,7 @@ function TransactionList() {
                             goToPage(0);
                         }}
                         placeholder="All"
-                        options={allCategories}
+                        options={transformedCategories}
                     />
                 </Grid2>
                 <Grid2  size={{xs:12,sm:4}}>
@@ -149,7 +152,7 @@ function TransactionList() {
                             goToPage(0);
                         }}
                         placeholder="All"
-                        options={["Income", "Expense"]}
+                        options={[{text:"Income", value:"Income"}, {text:"Expense", value:"Expenses"}]}
                     />
                 </Grid2>
                 <Grid2  size={{xs:12,sm:4}}>
@@ -161,13 +164,13 @@ function TransactionList() {
                             goToPage(0);
                         }}
                         placeholder="None"
-                        options={["Amount", "Date"]}
+                        options={[{text:"Amount", value:"amount"}, {text:"Date", value:"date"}]}
                     />
                 </Grid2>
             </Grid2>
 
             <Box sx={{ overflowX: 'auto' }}>
-                <TransactionsTable transactions={dataCurrentPage} columns={columns} />
+            <TransactionsTable transactions={dataCurrentPage} columns={columns} />
 
                 <TablePagination
                     component="div"

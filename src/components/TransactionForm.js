@@ -35,9 +35,13 @@ function TransactionForm({ transactionToEdit, onClose }) {
     }, [transactionToEdit]);
 
     const getCategoriesForType = () => {
-        return type === 'Income' ? incomeCategories : expenseCategories;
+        const allCategories = type === 'Income' ? incomeCategories : expenseCategories;
+        return allCategories.map(category => ({
+            text: category,
+            value: category
+        }));
     };
-
+    
     const findCategoryFromDescription = (desc, type) => {
         const lowerCaseDesc = desc.toLowerCase();
         
@@ -142,7 +146,7 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                     setType(selectedType);
                                     setCategory(findCategoryFromDescription(description, selectedType));
                                 }}
-                                options={["Income", "Expense"]}
+                                options={[{text:"Income", value:"Income"}, {text:"Expense", value:"Expense"}]}
                                 required
                             />
                         </Grid2>

@@ -46,5 +46,4 @@ ExportButton.propTypes = {
     label: PropTypes.string,
 };
 
-
 export default ExportButton;

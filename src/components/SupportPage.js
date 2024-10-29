@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Profiler, Suspense, useMemo } from 'react';
-import { Box, Typography, CircularProgress, Paper, Avatar, List, ListItem, ListItemAvatar, ListItemText, TextField, Button, Alert } from '@mui/material';
+import { Box, Typography, CircularProgress, Paper, List, TextField, Alert } from '@mui/material';
 import { onRenderCallback } from '../utils/onRenderCallback';
 import ContactSupport from './ContactSupport';
 function SupportPage() {
