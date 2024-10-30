@@ -45,7 +45,7 @@ function Analysis() {
                 acc[key] = { key, income: 0, expense: 0 };
             }
 
-            if (transaction.type === 'income') {
+            if (transaction.type === 'Income') {
                 acc[key].income += transaction.amount;
             } else {
                 acc[key].expense += transaction.amount;
