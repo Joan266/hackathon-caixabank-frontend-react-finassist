@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
-import { CircularProgress, Paper } from '@mui/material';
+import { CircularProgress, Box } from '@mui/material';
 import dayjs from 'dayjs';
 import { Typography } from '@mui/material';
 import RecommendationCard from './RecommendationCard'; 
@@ -70,12 +70,11 @@ function Recommendations() {
     }
 
     return (
-        <Paper sx={{ padding: 2, mt: 2 }}>
-            <Typography variant="h5">Recommendations</Typography>
+        <Box sx={{ mt: 2 }}>
             {recommendations.map((rec, index) => (
                 <RecommendationCard key={index} title={rec.title} message={rec.message} />
             ))}
-        </Paper>
+        </Box>
     );
 }
 

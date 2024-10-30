@@ -3,20 +3,24 @@ import { useStore } from '@nanostores/react';
 import { transactionsStore, deleteTransaction } from '../stores/transactionStore';
 import TransactionForm from './TransactionForm';
 import { allCategories } from '../constants/categories';
+import { useMediaQuery } from '@mui/material';
+
 import {
     Box,
     Button,
     Typography,
     TablePagination,
-    Grid2, 
+    Grid2,
 } from '@mui/material';
 import { useTransactionListModifiers } from '../hooks/useTransactionListModifiers.js';
 import Swal from 'sweetalert2';
 import SelectFieldComponent from './SelectFieldComponent.js';
 import TransactionsTable from './TransactionsTable';
+import TransactionsCards from './TransactionsCards.js';
 
 function TransactionList() {
     const transactions = useStore(transactionsStore);
+    const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const [filterCategory, setFilterCategory] = useState('');
     const [filterType, setFilterType] = useState('');
@@ -113,7 +117,7 @@ function TransactionList() {
         value: category
     }));
     return (
-        <Box>  
+        <Box>
             <Typography
                 variant="h4"
                 gutterBottom
@@ -130,8 +134,8 @@ function TransactionList() {
                 Add Transaction
             </Button>
 
-            <Grid2 container spacing={2} sx={{ my: 2, flexWrap: 'wrap' }}>
-                <Grid2 size={{xs:12,sm:4}}>
+            <Grid2 container spacing={2} sx={{ display: { xs: "block", sm: "flex" }, gap: 2, my: 2 }}>
+                <Grid2 size={{ xs: 12, sm: 4 }}>
                     <SelectFieldComponent
                         label="Category"
                         value={filterCategory}
@@ -143,7 +147,7 @@ function TransactionList() {
                         options={transformedCategories}
                     />
                 </Grid2>
-                <Grid2  size={{xs:12,sm:4}}>
+                <Grid2 size={{ xs: 12, sm: 4 }}>
                     <SelectFieldComponent
                         label="Type"
                         value={filterType}
@@ -152,10 +156,10 @@ function TransactionList() {
                             goToPage(0);
                         }}
                         placeholder="All"
-                        options={[{text:"Income", value:"Income"}, {text:"Expense", value:"Expenses"}]}
+                        options={[{ text: "Income", value: "Income" }, { text: "Expense", value: "Expenses" }]}
                     />
                 </Grid2>
-                <Grid2  size={{xs:12,sm:4}}>
+                <Grid2 size={{ xs: 12, sm: 4 }}>
                     <SelectFieldComponent
                         label="Sort By"
                         value={sortConfig.property}
@@ -164,23 +168,23 @@ function TransactionList() {
                             goToPage(0);
                         }}
                         placeholder="None"
-                        options={[{text:"Amount", value:"amount"}, {text:"Date", value:"date"}]}
+                        options={[{ text: "Amount", value: "amount" }, { text: "Date", value: "date" }]}
                     />
                 </Grid2>
             </Grid2>
-
-            <Box sx={{ overflowX: 'auto' }}>
-            <TransactionsTable transactions={dataCurrentPage} columns={columns} />
-
-                <TablePagination
-                    component="div"
-                    count={dataLength}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Box>
+            {!isMobile ? (
+                <TransactionsTable transactions={dataCurrentPage} columns={columns} />
+            ) : (
+                <TransactionsCards transactions={dataCurrentPage} columns={columns} />
+            )}
+            <TablePagination
+                component="div"
+                count={dataLength}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
             {openForm && (
                 <TransactionForm
                     transactionToEdit={editingTransaction}
