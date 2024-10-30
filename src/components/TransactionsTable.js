@@ -7,25 +7,38 @@ import {
     TableHead,
     TableRow,
     Paper,
+    Typography,
 } from '@mui/material';
 import TransactionRow from './TransactionRow';
+
 function TransactionsTable({ transactions, columns }) {
     return (
-        <TableContainer component={Paper}>
-            <Table size="small">
+        <TableContainer component={Paper} sx={{ mb: 2 }}>
+            <Table>
                 <TableHead>
                     <TableRow>
                         {columns.map((column, index) => (
-                            <TableCell key={index}>{column.header}</TableCell>
+                            <TableCell>
+                                {column.header}
+                            </TableCell>
                         ))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {transactions.map(transaction => (
-                      <TransactionRow key={transaction.id} transaction={transaction} columns={columns}/>
+                        <TransactionRow
+                            key={transaction.id}
+                            transaction={transaction}
+                            columns={columns}
+                        />
                     ))}
                 </TableBody>
             </Table>
+            {transactions.length === 0 && (
+                <Typography variant="body2" align="center" sx={{ padding: 2 }}>
+                    No recent transactions available.
+                </Typography>
+            )}
         </TableContainer>
     );
 }

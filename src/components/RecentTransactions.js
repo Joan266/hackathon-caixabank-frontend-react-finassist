@@ -2,11 +2,13 @@ import React from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import TransactionsTable from './TransactionsTable';
-import { Box, Typography } from '@mui/material';
-
+import TransactionsCards from './TransactionsCards';
+import { Typography } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 function RecentTransactions() {
     const transactions = useStore(transactionsStore);
 
+    const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
     const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
     const recentTransactions = sortedTransactions.slice(0, 5);
 
@@ -19,12 +21,16 @@ function RecentTransactions() {
     ];
 
     return (
-        <Box sx={{ padding: 2 }}>
+        <>
             <Typography variant="h6" gutterBottom>
                 Recent Transactions
             </Typography>
-            <TransactionsTable transactions={recentTransactions} columns={columns} />
-        </Box>
+            {!isMobile ? (
+                <TransactionsTable transactions={recentTransactions} columns={columns} />
+            ) : (
+                <TransactionsCards transactions={recentTransactions} columns={columns} />
+            )}
+        </>
     );
 }
 

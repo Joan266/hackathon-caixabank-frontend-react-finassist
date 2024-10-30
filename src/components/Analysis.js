@@ -74,7 +74,7 @@ function Analysis() {
         : ['key', 'budget', 'actual'];
 
     return (
-        <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
+        <Box>
             <Typography
                 variant="h4"
                 gutterBottom
