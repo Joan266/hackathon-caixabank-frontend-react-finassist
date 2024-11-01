@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { lightTheme, darkTheme } from './theme';
 import { BrowserRouter as Router } from 'react-router-dom';
 import DashboardLayoutBasic from './components/DashboardLayoutBasic';
+import './App.css';
 import {
   ThemeProvider,
   CssBaseline,
