@@ -18,7 +18,7 @@ function TransactionsTable({ transactions, columns }) {
                 <TableHead>
                     <TableRow>
                         {columns.map((column, index) => (
-                            <TableCell>
+                            <TableCell key={"h-"+index}>
                                 {column.header}
                             </TableCell>
                         ))}

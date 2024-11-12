@@ -13,7 +13,6 @@ import RegisterPage from './RegisterPage';
 import Logout from './Logout';
 import Footer from './Footer';
 import ProtectedRoute from './ProtectedRoute';
-import BudgetAlert from './BudgetAlert';
 import { authStore } from '../stores/authStore';
 import {
   Avatar,

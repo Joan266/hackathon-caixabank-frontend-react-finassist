@@ -69,7 +69,7 @@ function TransactionForm({ transactionToEdit, onClose }) {
             return;
         }
 
-        if (!getCategoriesForType(type).includes(category)) {
+        if (!getCategoriesForType().map(item => item.value).includes(category)) {
             Swal.fire({
                 title: 'Error!',
                 text: "Selected category does not match the transaction type.",
@@ -134,7 +134,7 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                                 required
-                                slotProps={{ input: { min: 0, step: '0.01' } }}  // Updated to use slotProps
+                                slotProps={{ input: { min: 0, step: '0.01' } }} 
                             />
                         </Grid2>
                         <Grid2 item xs={12} sm={6}>

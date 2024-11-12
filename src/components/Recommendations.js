@@ -3,13 +3,11 @@ import { useStore } from '@nanostores/react';
 import { transactionsStore } from '../stores/transactionStore';
 import { CircularProgress, Box } from '@mui/material';
 import dayjs from 'dayjs';
-import { Typography } from '@mui/material';
 import RecommendationCard from './RecommendationCard'; 
 
 function Recommendations() {
     const transactions = useStore(transactionsStore);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         setLoading(true);
@@ -20,10 +18,6 @@ function Recommendations() {
 
     if (loading) {
         return <CircularProgress />;
-    }
-
-    if (error) {
-        return <Typography color="error">{error}</Typography>;
     }
 
     const expenses = transactions.filter(transaction => transaction.type === 'Expense');
