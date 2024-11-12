@@ -33,7 +33,7 @@ function AlertBanner() {
             </Collapse>
 
             {exceededCategories.map(({ label, amount, limit }) => (
-                <Collapse in={true} key={label}>
+                <Collapse in={amount>limit && limit>0} key={label}>
                     <Alert severity="warning" sx={{ mb: 2 }}>
                         You have exceeded your budget limit for {label} ({limit} €)! Total spent: {amount.toFixed(2)} €.
                     </Alert>

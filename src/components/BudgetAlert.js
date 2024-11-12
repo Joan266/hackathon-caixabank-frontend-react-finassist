@@ -36,7 +36,7 @@ const BudgetAlert = () => {
         // - If the budget is exceeded, return an `Alert` component with the appropriate message and severity.
         <>
             {isVisible && (
-                <Alert severity="error" sx={{ mt: 2 }}>
+                <Alert severity="warning" sx={{ mb: 2 }}>
                     {message}
                 </Alert>
             )}
