@@ -15,7 +15,7 @@ function RegisterPage() {
     const handleRegister = (e) => {
         e.preventDefault();
 
- 
+
         if (!email || !password || !confirmPassword) {
             setError("Missing credentials.")
             return;
@@ -29,7 +29,7 @@ function RegisterPage() {
             setError("Email already in use.")
             return;
         }
-        login({ email, password,image: 'https://avatars.githubusercontent.com/u/19550456' });
+        login({ email, password, image: 'https://avatars.githubusercontent.com/u/19550456' });
         setSuccess(true);
         setError(null);
         setTimeout(() => {
@@ -86,7 +86,9 @@ function RegisterPage() {
                     Register
                 </Button>
             </form>
-
+            <Alert severity="warning" sx={{ mt: 2 }}>
+                "Aviso de No Oficialidad: Este sitio no es oficial. No introduzcas datos personales ni información sensible."
+            </Alert>
             {error && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                     {error}

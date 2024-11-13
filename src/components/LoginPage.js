@@ -94,8 +94,9 @@ function LoginPage() {
                     Login
                 </Button>
             </form>
-
-       
+            <Alert severity="warning" sx={{ mt: 2 }}>
+                "Aviso de No Oficialidad: Este sitio no es oficial. No introduzcas datos personales ni información sensible."
+            </Alert>
             {error && (
                 <Alert severity="error" sx={{ mt: 2 }}>
                     {error}

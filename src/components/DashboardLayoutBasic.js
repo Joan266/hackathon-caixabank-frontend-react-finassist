@@ -37,7 +37,7 @@ function DashboardLayoutBasic() {
 
   const branding = {
     logo: <img src={CaixaBankIcon} alt="Caixa Bank" />,
-    title: 'CaixaBank',
+    title: 'Hackathon',
   };
 
   function AvatarDisplay() {
