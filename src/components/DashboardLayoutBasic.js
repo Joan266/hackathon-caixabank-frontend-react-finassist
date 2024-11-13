@@ -10,10 +10,10 @@ import SupportPage from './SupportPage';
 import LoginPage from './LoginPage';
 import ForgotPasswordPage from './ForgotPasswordPage';
 import RegisterPage from './RegisterPage';
+import AlertBanner from '../components/AlertBanner'
 import Logout from './Logout';
 import Footer from './Footer';
 import ProtectedRoute from './ProtectedRoute';
-import BudgetAlert from './BudgetAlert';
 import { authStore } from '../stores/authStore';
 import {
   Avatar,
@@ -37,7 +37,7 @@ function DashboardLayoutBasic() {
 
   const branding = {
     logo: <img src={CaixaBankIcon} alt="Caixa Bank" />,
-    title: 'CaixaBank',
+    title: 'Hackathon',
   };
 
   function AvatarDisplay() {
@@ -62,7 +62,8 @@ function DashboardLayoutBasic() {
       <DashboardLayout
         slots={{ toolbarActions: () => <AvatarDisplay /> }}
       >
-        <Container sx={{ flex: 1, mt: 4, textAlign:"center" }}>
+        <Container sx={{ flex: 1, mt: 4, textAlign: "center" }}>
+          {isAuthenticated && <AlertBanner />}
           <Routes>
             <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useStore } from '@nanostores/react';
 import { transactionsStore, deleteTransaction } from '../stores/transactionStore';
 import TransactionForm from './TransactionForm';
-import { allCategories } from '../constants/categories';
+import { allCategories, incomeCategories,expenseCategories } from '../constants/categories';
 import { useMediaQuery } from '@mui/material';
 
 import {
@@ -112,10 +112,18 @@ function TransactionList() {
             ),
         },
     ];
-    const transformedCategories = allCategories.map(category => ({
-        text: category,
-        value: category
-    }));
+    const transformedCategories = useMemo(() => {
+        const categories =
+            filterType === "Expense" ? expenseCategories :
+            filterType === "Income" ? incomeCategories :
+            allCategories;
+    
+        return categories.map(category => ({
+            text: category,
+            value: category
+        }));
+    }, [filterType]);
+    
     return (
         <Box>
             <Typography
@@ -156,7 +164,7 @@ function TransactionList() {
                             goToPage(0);
                         }}
                         placeholder="All"
-                        options={[{ text: "Income", value: "Income" }, { text: "Expense", value: "Expenses" }]}
+                        options={[{ text: "Income", value: "Income" }, { text: "Expense", value: "Expense" }]}
                     />
                 </Grid2>
                 <Grid2 size={{ xs: 12, sm: 4 }}>
@@ -189,6 +197,7 @@ function TransactionList() {
                 <TransactionForm
                     transactionToEdit={editingTransaction}
                     onClose={handleCloseForm}
+                    open={openForm}
                 />
             )}
         </Box>

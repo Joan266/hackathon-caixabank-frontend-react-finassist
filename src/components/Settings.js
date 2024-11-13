@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { userSettingsStore, updateUserSettingsStore } from '../stores/userSettingsStore';
-import { updateBudgetAlert } from '../stores/budgetAlertStore';
 import {
     Box,
     Typography,
@@ -11,7 +10,6 @@ import {
     Button,
     Grid2,
     Paper,
-    Alert,
 } from '@mui/material';
 import { transactionsStore } from '../stores/transactionStore';
 import Swal from 'sweetalert2';
@@ -47,7 +45,6 @@ function Settings() {
         }
 
         try {
-            budgetExceeded && updateBudgetAlert("Budget exceeded");
             updateUserSettingsStore({ totalBudgetLimit, categoryLimits: categoryBudgetLimits, alertsEnabled, budgetExceeded });
             Swal.fire({
                 title: 'Success!',
@@ -66,7 +63,7 @@ function Settings() {
     };
 
     return (
-        <Box sx={{ mt: 4, p: { xs: 2, md: 4 }, bgcolor: 'background.default' }}>
+        <Box >
             <Typography
                 variant="h4"
                 gutterBottom
@@ -136,12 +133,6 @@ function Settings() {
                     Save Settings
                 </Button>
             </Box>
-
-            {budgetExceeded && (
-                <Alert severity="warning" sx={{ mt: 2 }}>
-                    You have exceeded your budget limit of {totalBudgetLimit} €!
-                </Alert>
-            )}
         </Box>
     );
 }
