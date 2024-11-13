@@ -197,6 +197,7 @@ function TransactionList() {
                 <TransactionForm
                     transactionToEdit={editingTransaction}
                     onClose={handleCloseForm}
+                    open={openForm}
                 />
             )}
         </Box>

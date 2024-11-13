@@ -10,7 +10,6 @@ import {
     Button,
     Grid2,
     Paper,
-    Alert,
 } from '@mui/material';
 import { transactionsStore } from '../stores/transactionStore';
 import Swal from 'sweetalert2';
@@ -134,12 +133,6 @@ function Settings() {
                     Save Settings
                 </Button>
             </Box>
-
-            {budgetExceeded && (
-                <Alert severity="warning" sx={{ mt: 2 }}>
-                    You have exceeded your budget limit of {totalBudgetLimit} €!
-                </Alert>
-            )}
         </Box>
     );
 }

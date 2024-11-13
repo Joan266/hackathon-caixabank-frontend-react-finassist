@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addTransaction } from '../stores/transactionStore';
+import { addTransaction, updateTransaction } from '../stores/transactionStore';
 import {
     Dialog,
     DialogTitle,
@@ -15,7 +15,8 @@ import { expenseCategoryKeywords, incomeCategoriesKeywords } from '../constants/
 import SelectFieldComponent from './SelectFieldComponent';
 import DateFieldComponent from './DateFieldComponent';
 import TextFieldComponent from './TextFieldComponent';
-function TransactionForm({ transactionToEdit, onClose }) {
+
+function TransactionForm({ transactionToEdit, onClose, open }) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('Expense');
@@ -41,21 +42,21 @@ function TransactionForm({ transactionToEdit, onClose }) {
             value: category
         }));
     };
-    
+
     const findCategoryFromDescription = (desc, type) => {
         const lowerCaseDesc = desc.toLowerCase();
-        
+
         const categoryKeywords = type === "Expense" ? expenseCategoryKeywords : incomeCategoriesKeywords;
-    
+
         for (const [cat, keywords] of Object.entries(categoryKeywords)) {
             if (keywords.some(keyword => lowerCaseDesc.includes(keyword))) {
                 return cat;
             }
         }
-    
+
         return type === "Expense" ? 'Other Expenses' : 'Other Income';
     };
-    
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -89,7 +90,11 @@ function TransactionForm({ transactionToEdit, onClose }) {
         };
 
         try {
-            addTransaction(transaction);
+            if (transactionToEdit) {
+                updateTransaction(transaction.id, transaction);
+            } else {
+                addTransaction(transaction);
+            }
             Swal.fire({
                 title: 'Success!',
                 text: `Transaction ${transactionToEdit ? "updated" : "added"} successfully:\n\nDescription: ${transaction.description}\nAmount: €${transaction.amount.toFixed(2)}\nType: ${transaction.type}\nCategory: ${transaction.category}\nDate: ${new Date(transaction.date).toLocaleDateString()}`,
@@ -110,12 +115,12 @@ function TransactionForm({ transactionToEdit, onClose }) {
     };
 
     return (
-        <Dialog open={true} onClose={onClose}>
+        <Dialog open={open} onClose={onClose}>
             <DialogTitle>{transactionToEdit ? 'Edit Transaction' : 'Add Transaction'}</DialogTitle>
             <form onSubmit={handleSubmit}>
                 <DialogContent>
                     <Grid2 container spacing={2}>
-                        <Grid2  size={{xs:12}}>
+                        <Grid2 size={{ xs: 12 }}>
                             <TextFieldComponent
                                 label="Description"
                                 value={description}
@@ -127,17 +132,17 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                 required
                             />
                         </Grid2>
-                        <Grid2 size={{xs:12,sm:6}}>
+                        <Grid2 size={{ xs: 12, sm: 6 }}>
                             <TextFieldComponent
                                 label="Amount (€)"
                                 type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
                                 required
-                                slotProps={{ input: { min: 0, step: '0.01' } }} 
+                                slotProps={{ input: { min: 0, step: '0.01' } }}
                             />
                         </Grid2>
-                        <Grid2 item xs={12} sm={6}>
+                        <Grid2 xs={12} sm={6}>
                             <SelectFieldComponent
                                 label="Type"
                                 value={type}
@@ -146,11 +151,11 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                     setType(selectedType);
                                     setCategory(findCategoryFromDescription(description, selectedType));
                                 }}
-                                options={[{text:"Income", value:"Income"}, {text:"Expense", value:"Expense"}]}
+                                options={[{ text: "Income", value: "Income" }, { text: "Expense", value: "Expense" }]}
                                 required
                             />
                         </Grid2>
-                        <Grid2 item xs={12} sm={6}>
+                        <Grid2 xs={12} sm={6}>
                             <SelectFieldComponent
                                 label="Category"
                                 value={category}
@@ -159,7 +164,7 @@ function TransactionForm({ transactionToEdit, onClose }) {
                                 required
                             />
                         </Grid2>
-                        <Grid2 item xs={12} sm={6}>
+                        <Grid2 xs={12} sm={6}>
                             <DateFieldComponent
                                 label="Date"
                                 value={date}

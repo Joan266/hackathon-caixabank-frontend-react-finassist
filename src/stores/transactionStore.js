@@ -17,6 +17,17 @@ export const addTransaction = (transaction) => {
     setTransactions(updatedTransactions); 
 };
 
+export const updateTransaction = (id, newTransaction) => {
+    const currentTransactions = transactionsStore.get();
+
+    const updatedTransactions = currentTransactions.map((transaction) => {
+        return transaction.id === id ? newTransaction : transaction;
+    });
+
+    setTransactions(updatedTransactions); 
+};
+
+
 export const deleteTransaction = (id) => {
     const currentTransactions = transactionsStore.get();
     const updatedTransactions = currentTransactions.filter(transaction => transaction.id !== id);
